@@ -196,7 +196,7 @@ void cubepos::initSymIdxMultiply(){
 }
 
 /* Multiply the cube state by a symmetry on the left */
-void leftMult (int symIdx){
+void cubepos::leftMult (int symIdx){
 	int[] cenN = new int[6]; // Transform centers into unique facelets.
 	for (int c = 0; c < 6; c++) cenN = 0; // Initialise the array with zeros.
 
@@ -207,9 +207,22 @@ void leftMult (int symIdx){
 }
 
 /* Multiply the cube state by a symmetry on the right */
-void rightMult (int symIdx, cubepos c){
+void cubepos::rightMult (int symIdx, cubepos c){
 	for (int i = 0; i < 24; i++){
 		c.centers[i] = centers[symCenters[symIdx][i]];
 		c.edges[i] = edges[symEdges[symIdx][i]];
 	}
+}
+
+/* We need to compute the binomial coefficients. */
+static void cubepos::initCnk() {
+  for (int i=0; i<25; i++) {
+    Cnk[i][i] = 1;
+    Cnk[i][0] = 1;
+  }
+  for (int i=1; i<25; i++) {
+    for (int j=1; j<=i; j++) {
+      Cnk[i][j] = Cnk[i-1][j] + Cnk[i-1][j-1];
+    }
+  }
 }
