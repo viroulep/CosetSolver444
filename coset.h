@@ -8,9 +8,9 @@ const int SYM_MASK = ( 1 << SYM_SHIFT ) - 1;
 const int N_MOVES = 36;
 
 class coset {
-	public :
-		unsigned int center_rl_raw;
-		unsigned short center_rl_sym;
+    public :
+    unsigned int center_rl_raw;
+    unsigned short center_rl_sym;
     unsigned char sym;
     
     static unsigned int sym2raw[N_COORD]; // Get a representative of a sym-coordinate
@@ -18,6 +18,8 @@ class coset {
     static unsigned long long hasSym[N_COORD]; // Stores which positions are symmetric to which symmetries
     static unsigned short moveTable[N_COORD][N_MOVES]; // Move table of the sym-coordinate
     
+    static unsigned char ptable[N_COORD>>1]; // Distance table of all coset positions
+
     /* Set one bit to 1 in the table at a certain index. */
     inline static void set1bit(unsigned char table[], int index) {
       table[index>>>3] |= (unsigned char)( 1 << ( index & 0x7 ));
@@ -28,5 +30,11 @@ class coset {
       return ( table[index>>>3] >>> ( index & 0x7 )) & 1;
     }
 
+    inline static void writeTable (int index, int value) {
+        ptable[index >> 1] ^= (0x0f ^ value) << ((index & 1) << 2);
+    }
 
+    inline static int readTable (int index) {
+        return (ptable[index >> 1] >> ((index & 1) << 2)) & 0x0f;
+    }
 }

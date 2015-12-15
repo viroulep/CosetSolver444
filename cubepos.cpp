@@ -5,6 +5,8 @@ void cubepos::init() {
 	initSymTables();
 	initInvSymIdx();
 	initSymIdxMultiply();
+	initMoveConjugate();
+	initCnk();
 }
 
 /* Set the cube as the solved state */
@@ -212,6 +214,51 @@ void cubepos::rightMult (int symIdx, cubepos c){
 		c.centers[i] = centers[symCenters[symIdx][i]];
 		c.edges[i] = edges[symEdges[symIdx][i]];
 	}
+}
+
+/* Conjugate the cube state by a symmetry */
+void cubepos::conjugate (int symIdx, cubepos c){
+	rightMult( invSymIdx[symIdx], c );
+	c.leftMult( symIdx );
+}
+
+
+void cubepos::initMoveConjugate(){
+
+	cubepos cube;
+	cubepos cube2;
+	cubepos cube3;
+
+	for (int i=0; i<N_MOVES; i++){
+		cube.identity();
+		cube.move(i);
+		for (int j=0; j<N_SYM; j++){
+			cube.conjugate(j, cube2);
+			for (int k=0; k<Moves.N_MOVES; k++){
+				cube3.identity();
+				cube3.move(k);
+				char isMove = 1;
+				for (int l=0; l<24; l++){
+					if( cube3.edges[l] != cube2.edges[l] ){
+						isMove = 0;
+						break;
+					}
+				}
+				if( isMove ){
+					moveConjugate[i][j] = k;
+					break;
+				}
+			}
+		}
+	}
+
+	for (byte i=0; i<N_STAGE_MOVES; i++) {
+		moves2stage[stage2moves[i]] = i;
+
+	for (int i=0; i<N_STAGE_MOVES; i++)
+		for (int j=0; j<N_SYM; j++)
+			moveConjugateStage[i][j] = moves2stage[moveConjugate[stage2moves[i]][j]];
+
 }
 
 /* We need to compute the binomial coefficients. */

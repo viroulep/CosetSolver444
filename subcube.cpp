@@ -1,6 +1,6 @@
-#include "subcube.h"
 #include <iostream>
-
+#include "subcube.h"
+#include "coset.h"
 
 void subgroup::init(){
   initSym2Raw();

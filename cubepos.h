@@ -81,14 +81,15 @@ class cubepos {
 		unsigned char centers[24];
 		unsigned char edges[24];
 
-    // Convert general move notation to stage move notation (ordered so that moves for each stage are (1..N_s))
-    static unsigned char stage2moves[N_STAGE_MOVES] = {
-      MOVE_Uf1, MOVE_Uf2, MOVE_Uf3, MOVE_Rf2, MOVE_Ff1, MOVE_Ff2, MOVE_Ff3, 
-      MOVE_Df1, MOVE_Df2, MOVE_Df3, MOVE_Lf2, MOVE_Bf1, MOVE_Bf2, MOVE_Bf3, 
-      MOVE_Us2, MOVE_Rs2, MOVE_Fs2, MOVE_Ds2, MOVE_Ls2, MOVE_Bs2, // Stage 3 moves
-      MOVE_Rf1, MOVE_Rf3, MOVE_Lf1, MOVE_Lf3, MOVE_Rs1, MOVE_Rs3, MOVE_Ls1, MOVE_Ls3, // Stage 2/3 moves
-      MOVE_Us1, MOVE_Us3, MOVE_Fs1, MOVE_Fs3, MOVE_Ds1, MOVE_Ds3, MOVE_Bs1, MOVE_Bs3 // Stage 1/2/3 moves
-    };
+    	// Convert general move notation to stage move notation (ordered so that moves for each stage are (1..N_s))
+	    static int stage2moves[N_STAGE_MOVES] = {
+	      MOVE_Uf1, MOVE_Uf2, MOVE_Uf3, MOVE_Rf2, MOVE_Ff1, MOVE_Ff2, MOVE_Ff3, 
+	      MOVE_Df1, MOVE_Df2, MOVE_Df3, MOVE_Lf2, MOVE_Bf1, MOVE_Bf2, MOVE_Bf3, 
+	      MOVE_Us2, MOVE_Rs2, MOVE_Fs2, MOVE_Ds2, MOVE_Ls2, MOVE_Bs2, // Stage 3 moves
+	      MOVE_Rf1, MOVE_Rf3, MOVE_Lf1, MOVE_Lf3, MOVE_Rs1, MOVE_Rs3, MOVE_Ls1, MOVE_Ls3, // Stage 2/3 moves
+	      MOVE_Us1, MOVE_Us3, MOVE_Fs1, MOVE_Fs3, MOVE_Ds1, MOVE_Ds3, MOVE_Bs1, MOVE_Bs3 // Stage 1/2/3 moves
+	    };
+		static int moves2stage[N_MOVES]; // Inverse of the above array
 
 		/* Stores how each symmetry is permuting pieces of the cube */
 		static unsigned char symEdges[N_SYM][24];
@@ -97,8 +98,11 @@ class cubepos {
 		/* Stores some arithmetic of symmetries */
 		static int invSymIdx[N_SYM]; // Inverse of a symmetry
 		static int symIdxMultiply[N_SYM][N_SYM]; // Composition of two symmetries
+		static int moveConjugate[N_MOVES][N_SYM]; // Mapping of moves by symmetries
+		static int moveConjugateStage[N_STAGE_MOVES][N_SYM]; // Mapping of moves by symmetries in the stage space
 
-    static int Cnk[25][25]; // binomial coefficients
+
+	    static int Cnk[25][25]; // binomial coefficients
 
 		/* Perform the permutation cycle (a b c d) on the tab array */
 		static inline void cycle(unsigned char[] tab, int a, int b, int c, int d, int times){
