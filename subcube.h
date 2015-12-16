@@ -1,17 +1,20 @@
+#ifndef SUBCUBE_H
+#define SUBCUBE_H
+
 #include "cubepos.h"
 
-const int N_COORD_CENTER_R = 24*23*22*21/(4*3*2*1);
-const int N_COORD_CENTER_FB = 24*23*22*21*20*19*18*17/(8*7*6*5*4*3*2*1);
-const int N_RAW_COORD_EDGES = 24*23*22*21*20*19*18*17*16*15*14*13/(12*11*10*9*8*7*6*5*4*3*2*1);
-const int N_COORD_EDGES = 86048;
+const int SUBCUBE_N_COORD_CENTER_R = 10626;
+const int SUBCUBE_N_COORD_CENTER_FB = 735471;
+const int SUBCUBE_N_RAW_COORD_EDGES = 1352078;
+const int SUBCUBE_N_COORD_EDGES = 86048;
 
-const int N_SYM = 16
-const int SYM_SHIFT = 4
-const int SYM_MASK = ( 1 << SYM_SHIFT ) - 1;
-const int N_MOVES = 36;
-const int N_MOVES_SUBGROUP = 28;
+const int SUBCUBE_N_SYM = 16;
+const int SUBCUBE_SYM_SHIFT = 4;
+const int SUBCUBE_SYM_MASK = ( 1 << SUBCUBE_SYM_SHIFT ) - 1;
+const int SUBCUBE_N_MOVES_ALL = 36;
+const int SUBCUBE_N_MOVES = 28;
 
-class coset {
+class subcube {
     public :
     unsigned short center_r;
     unsigned int center_fb;
@@ -19,26 +22,38 @@ class coset {
     unsigned int edge_sym;
     unsigned char sym;
     
-    static unsigned int sym2raw[N_COORD_EDGES]; // Get a representative of a sym-coordinate
-    static unsigned short raw2sym[N_RAW_COORD_EDGES]; // Get the sym-coordinate of a raw coordinate
-    static unsigned int hasSym[N_COORD_EDGES]; // Stores which positions are symmetric to which symmetries
+    static unsigned int sym2raw[SUBCUBE_N_COORD_EDGES]; // Get a representative of a sym-coordinate
+    static unsigned short raw2sym[SUBCUBE_N_RAW_COORD_EDGES]; // Get the sym-coordinate of a raw coordinate
+    static unsigned int hasSym[SUBCUBE_N_COORD_EDGES]; // Stores which positions are symmetric to which symmetries
 
-    static unsigned short moveTableCenterR[N_COORD_CENTER_R][N_MOVES]; // Move table of the center R
-    static unsigned short moveTableCenterFB[N_COORD_CENTER_FB][N_MOVES]; // Move table of the center FB
-    static unsigned short moveTableEdge[N_COORD_EDGES][N_MOVES]; // Move table of the edge sym-coordinate
+    static unsigned short moveTableCenterR[SUBCUBE_N_COORD_CENTER_R][SUBCUBE_N_MOVES_ALL]; // Move table of the center R
+    static unsigned short moveTableCenterFB[SUBCUBE_N_COORD_CENTER_FB][SUBCUBE_N_MOVES_ALL]; // Move table of the center FB
+    static unsigned short moveTableEdge[SUBCUBE_N_COORD_EDGES][SUBCUBE_N_MOVES_ALL]; // Move table of the edge sym-coordinate
 
-    static unsigned short conjTableCenterR[N_COORD_CENTER_R][N_MOVES]; // Conjugate table of the center R
-    static unsigned short conjTableCenterFB[N_COORD_CENTER_FB][N_MOVES]; // Conjugate table of the center FB
+    static unsigned short conjTableCenterR[SUBCUBE_N_COORD_CENTER_R][SUBCUBE_N_MOVES_ALL]; // Conjugate table of the center R
+    static unsigned short conjTableCenterFB[SUBCUBE_N_COORD_CENTER_FB][SUBCUBE_N_MOVES_ALL]; // Conjugate table of the center FB
     
     /* Set one bit to 1 in the table at a certain index. */
     inline static void set1bit(unsigned char table[], int index) {
-      table[index>>>3] |= (unsigned char)( 1 << ( index & 0x7 ));
+      table[index>>3] |= (unsigned char)( 1 << ( index & 0x7 ));
     }
 
     /* Get the state of one bit in the table at a certain index. */
     inline static unsigned char get1bit(unsigned char table[], int index) {
-      return ( table[index>>>3] >>> ( index & 0x7 )) & 1;
+      return ( table[index>>3] >> ( index & 0x7 )) & 1;
     }
 
+    void init();
+    void unpack_center_r(cubepos cube, unsigned short center_r);
+    unsigned short pack_center_r(cubepos cube);
+    void unpack_edge(cubepos cube, unsigned int edge_raw);
+    unsigned int pack_edge(cubepos cube);
+    void initSym2Raw ();
+    void pack_all(cubepos cube);
+    void initMove ();
+    void moveTo( int m, subcube c );
+    void canonize( int sym );
 
-}
+};
+
+#endif

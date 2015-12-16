@@ -1,5 +1,22 @@
 #include "cubepos.h"
 
+/* Definition of static variables (more c++ random stuff) */
+int cubepos::stage2moves[N_STAGE_MOVES] = {
+	MOVE_Uf1, MOVE_Uf2, MOVE_Uf3, MOVE_Rf2, MOVE_Ff1, MOVE_Ff2, MOVE_Ff3, 
+	MOVE_Df1, MOVE_Df2, MOVE_Df3, MOVE_Lf2, MOVE_Bf1, MOVE_Bf2, MOVE_Bf3, 
+	MOVE_Us2, MOVE_Rs2, MOVE_Fs2, MOVE_Ds2, MOVE_Ls2, MOVE_Bs2, // Stage 3 moves
+	MOVE_Rf1, MOVE_Rf3, MOVE_Lf1, MOVE_Lf3, MOVE_Rs1, MOVE_Rs3, MOVE_Ls1, MOVE_Ls3, // Stage 2/3 moves
+	MOVE_Us1, MOVE_Us3, MOVE_Fs1, MOVE_Fs3, MOVE_Ds1, MOVE_Ds3, MOVE_Bs1, MOVE_Bs3 // Stage 1/2/3 moves
+};
+int cubepos::moves2stage[N_MOVES];
+unsigned char cubepos::symEdges[N_SYM][24];
+unsigned char cubepos::symCenters[N_SYM][24];
+int cubepos::invSymIdx[N_SYM];
+int cubepos::symIdxMultiply[N_SYM][N_SYM];
+int cubepos::moveConjugate[N_MOVES][N_SYM];
+int cubepos::moveConjugateStage[N_STAGE_MOVES][N_SYM];
+int cubepos::Cnk[25][25];
+
 /* Initialise static arrays and stuff */
 void cubepos::init() {
 	initSymTables();
@@ -19,8 +36,8 @@ void cubepos::identity() {
 
 /* Apply a single move to the cube position */
 void cubepos::move(int move) {
-	int rot = (move_code % 3) + 1;
-	int layer = move_code / 3;
+	int rot = (move % 3) + 1;
+	int layer = move / 3;
 	switch (layer) {
 		case 0: // U
 			cycle(centers, 0, 3, 1, 2, rot);
@@ -163,13 +180,13 @@ void cubepos::initSymTables(){
 				move (MOVE_Bw2);
 			}
 			idx += 4;
-			move (MOVE_Uw);
+			move (MOVE_Uw1);
 			move (MOVE_Dw3);
 		}
 		move (MOVE_Uw3);
-		move (MOVE_Dw);
+		move (MOVE_Dw1);
 		move (MOVE_Rw3);
-		move (MOVE_Lw);
+		move (MOVE_Lw1);
 	}
 }
 
@@ -199,8 +216,8 @@ void cubepos::initSymIdxMultiply(){
 
 /* Multiply the cube state by a symmetry on the left */
 void cubepos::leftMult (int symIdx){
-	int[] cenN = new int[6]; // Transform centers into unique facelets.
-	for (int c = 0; c < 6; c++) cenN = 0; // Initialise the array with zeros.
+	int cenN[6]; // Transform centers into unique facelets.
+	for (int c = 0; c < 6; c++) cenN[c] = 0; // Initialise the array with zeros.
 
 	for (int i = 0; i < 24; i++){
 		centers[i] = symCenters[symIdx][centers[i]*4+cenN[centers[i]]++] / 4;
@@ -234,7 +251,7 @@ void cubepos::initMoveConjugate(){
 		cube.move(i);
 		for (int j=0; j<N_SYM; j++){
 			cube.conjugate(j, cube2);
-			for (int k=0; k<Moves.N_MOVES; k++){
+			for (int k=0; k<N_MOVES; k++){
 				cube3.identity();
 				cube3.move(k);
 				char isMove = 1;
@@ -252,7 +269,7 @@ void cubepos::initMoveConjugate(){
 		}
 	}
 
-	for (byte i=0; i<N_STAGE_MOVES; i++) {
+	for (int i=0; i<N_STAGE_MOVES; i++)
 		moves2stage[stage2moves[i]] = i;
 
 	for (int i=0; i<N_STAGE_MOVES; i++)
@@ -262,7 +279,7 @@ void cubepos::initMoveConjugate(){
 }
 
 /* We need to compute the binomial coefficients. */
-static void cubepos::initCnk() {
+void cubepos::initCnk() {
   for (int i=0; i<25; i++) {
     Cnk[i][i] = 1;
     Cnk[i][0] = 1;
