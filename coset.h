@@ -42,12 +42,12 @@ class coset {
     }
 
     void init();
-    void unpack(cubepos cube, unsigned int center_raw);
-    unsigned int pack(cubepos cube);
+    void unpack(cubepos &cube, unsigned int center_raw);
+    unsigned int pack(const cubepos &cube);
     void initSym2Raw();
-    void pack_all(cubepos cube);
+    void pack_all(const cubepos &cube);
     void initMove();
-    void moveTo( int m, coset c );
+    void moveTo( int m, coset &c );
     void fillPruningTable();
 
 };

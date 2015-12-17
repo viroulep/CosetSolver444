@@ -1,6 +1,8 @@
 #ifndef CUBEPOS_H
 #define CUBEPOS_H
 
+#include <cstring>
+
 #define MOVE_Uf1  0  //Up "face" (top slice) clockwise wrt top
 #define MOVE_Uf2  1  //Up "face" counter-clockwise
 #define MOVE_Uf3  2  //Up "face" 180 degrees
@@ -78,11 +80,24 @@
 #define N_STAGE_MOVES 36
 #define N_SYM 48
 
+extern const class cubepos identity_cube;
 
 class cubepos {
 	public :
 		unsigned char centers[24];
 		unsigned char edges[24];
+
+		inline bool operator==(const cubepos &cp) const {
+			return std::memcmp(this, &cp, sizeof(cp)) == 0;
+		}
+
+		inline bool operator!=(const cubepos &cp) const {
+			return std::memcmp(this, &cp, sizeof(cp)) != 0;
+		}
+
+		/* Constructors */
+		inline cubepos(const cubepos &cp=identity_cube) { *this = cp; }
+		cubepos(int,int,int);
 
     	/* Convert general move notation to stage move notation (ordered so that moves for each stage are (1..N_s)) */
 	    static int stage2moves[N_STAGE_MOVES]; 
@@ -97,7 +112,6 @@ class cubepos {
 		static int symIdxMultiply[N_SYM][N_SYM]; // Composition of two symmetries
 		static int moveConjugate[N_MOVES][N_SYM]; // Mapping of moves by symmetries
 		static int moveConjugateStage[N_STAGE_MOVES][N_SYM]; // Mapping of moves by symmetries in the stage space
-
 
 	    static int Cnk[25][25]; // binomial coefficients
 
@@ -120,10 +134,12 @@ class cubepos {
 		void initInvSymIdx();
 		void initSymIdxMultiply();
 		void leftMult(int symIdx);
-		void rightMult(int symIdx, cubepos c);
-		void conjugate (int symIdx, cubepos c);
+		void rightMult(int symIdx, cubepos &c);
+		void conjugate (int symIdx, cubepos &c);
 		void initMoveConjugate();
 		void initCnk();
 };
+
+static cubepos cubepos_initialization_hack(1,2,3);
 
 #endif

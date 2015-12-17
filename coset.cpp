@@ -10,13 +10,16 @@ unsigned short coset::moveTable[COSET_N_COORD][COSET_N_MOVES];
 unsigned char coset::ptable[COSET_N_COORD>>1];
 
 void coset::init(){
+  std::cout << "Coset: initSym2Raw" << std::endl;
   initSym2Raw();
+  std::cout << "Coset: initMove" << std::endl;
   initMove();
+  std::cout << "Coset: fillPruningTable" << std::endl;
   fillPruningTable();
 }
 
 /* Unpack a raw center coord to a cube */
-void coset::unpack(cubepos cube, unsigned int center_raw)
+void coset::unpack(cubepos &cube, unsigned int center_raw)
 {
   unsigned char udfb = 0;
   unsigned char rl = 0;
@@ -32,7 +35,7 @@ void coset::unpack(cubepos cube, unsigned int center_raw)
 }
 
 /* Pack a cube into the raw center coord */
-unsigned int coset::pack(cubepos cube){
+unsigned int coset::pack(const cubepos &cube){
   unsigned int center_raw = 0;
   int r = 8;
   for (int i = 23; i >= 0; i--) {
@@ -64,12 +67,12 @@ void coset::initSym2Raw (){
     sym2raw[repIdx++] = u;
   }
   if(repIdx != COSET_N_COORD) {
-    std::cout << "The number of sym coordinates is not correct: " << repIdx;
+    std::cout << "The number of sym coordinates is not correct: " << repIdx << std::endl;
   }
 }
 
 /* Pack all coordinates from the full cube position, and compute the sym coordinate */
-void coset::pack_all(cubepos cube){
+void coset::pack_all(const cubepos &cube){
   center_rl_raw = pack(cube);
   center_rl_sym = raw2sym[center_rl_raw];
   sym = center_rl_sym & COSET_SYM_MASK;
@@ -90,7 +93,7 @@ void coset::initMove (){
   }
 }
 
-void coset::moveTo( int m, coset c ){
+void coset::moveTo( int m, coset &c ){
   c.center_rl_sym = moveTable[center_rl_sym][cubepos::moveConjugateStage[m][sym]];
   c.sym = cubepos::symIdxMultiply[c.center_rl_sym & COSET_SYM_MASK][sym];
   c.center_rl_sym >>= COSET_SYM_SHIFT;

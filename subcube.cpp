@@ -12,12 +12,14 @@ unsigned short subcube::conjTableCenterR[SUBCUBE_N_COORD_CENTER_R][SUBCUBE_N_MOV
 unsigned short subcube::conjTableCenterFB[SUBCUBE_N_COORD_CENTER_FB][SUBCUBE_N_MOVES_ALL];
 
 void subcube::init(){
+  std::cout << "Subcube: initSym2Raw" << std::endl;
   initSym2Raw();
+  std::cout << "Subcube: initMove" << std::endl;
   initMove();
 }
 
 /* Unpack a centerR coord to a cube */
-void subcube::unpack_center_r(cubepos cube, unsigned short center_raw)
+void subcube::unpack_center_r(cubepos &cube, unsigned short center_raw)
 {
   unsigned char udfbl = 0;
   int r = 4;
@@ -32,7 +34,7 @@ void subcube::unpack_center_r(cubepos cube, unsigned short center_raw)
 }
 
 /* Pack a cube into the raw center coord */
-unsigned short subcube::pack_center_r(cubepos cube){
+unsigned short subcube::pack_center_r(const cubepos &cube){
   unsigned short center = 0;
   int r = 4;
   for (int i = 23; i >= 0; i--) {
@@ -44,7 +46,7 @@ unsigned short subcube::pack_center_r(cubepos cube){
 }
 
 /* Unpack an raw edge coord to a cube */
-void subcube::unpack_edge(cubepos cube, unsigned int edge_raw)
+void subcube::unpack_edge(cubepos &cube, unsigned int edge_raw)
 {
   unsigned char r_edge = 0;
   unsigned char l_edge = 12;
@@ -60,7 +62,7 @@ void subcube::unpack_edge(cubepos cube, unsigned int edge_raw)
 }
 
 /* Pack a cube into the raw edge coord */
-unsigned int subcube::pack_edge(cubepos cube){
+unsigned int subcube::pack_edge(const cubepos &cube){
   unsigned short edge = 0;
   int r = 12;
   unsigned short last_edge = cube.edges[23];
@@ -98,7 +100,7 @@ void subcube::initSym2Raw (){
 }
 
 /* Pack all coordinates from the full cube position, and compute the sym coordinate */
-void subcube::pack_all(cubepos cube){
+void subcube::pack_all(const cubepos &cube){
   center_r = pack_center_r(cube);
   coset c;
   center_fb = c.pack(cube);
@@ -154,7 +156,7 @@ void subcube::initMove (){
 }
 
 /* Apply a move to the subgroup state */
-void subcube::moveTo( int m, subcube c ){
+void subcube::moveTo( int m, subcube &c ){
   c.center_r = moveTableCenterR[center_r][m];
   c.center_fb = moveTableCenterFB[center_fb][m];
   c.edge_sym = moveTableEdge[edge_sym][cubepos::moveConjugateStage[m][sym]];

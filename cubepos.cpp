@@ -1,6 +1,8 @@
 #include "cubepos.h"
+#include <iostream>
 
 /* Definition of static variables (more c++ random stuff) */
+const cubepos identity_cube(0,0,0);
 int cubepos::stage2moves[N_STAGE_MOVES] = {
 	MOVE_Uf1, MOVE_Uf2, MOVE_Uf3, MOVE_Rf2, MOVE_Ff1, MOVE_Ff2, MOVE_Ff3, 
 	MOVE_Df1, MOVE_Df2, MOVE_Df3, MOVE_Lf2, MOVE_Bf1, MOVE_Bf2, MOVE_Bf3, 
@@ -19,10 +21,20 @@ int cubepos::Cnk[25][25];
 
 /* Initialise static arrays and stuff */
 void cubepos::init() {
+	static int initialized = 0;
+	if (initialized)
+		return;
+	initialized = 1;
+
+	std::cout << "cubepos: initSymTables" << std::endl;
 	initSymTables();
+	std::cout << "cubepos: initInvSymIdx" << std::endl;
 	initInvSymIdx();
+	std::cout << "cubepos: initSymIdxMultiply" << std::endl;
 	initSymIdxMultiply();
+	std::cout << "cubepos: initMoveConjugate" << std::endl;
 	initMoveConjugate();
+	std::cout << "cubepos: initCnk" << std::endl;
 	initCnk();
 }
 
@@ -33,6 +45,12 @@ void cubepos::identity() {
 		edges[i] = i;
 	}
 }
+
+cubepos::cubepos(int,int,int) {
+	identity();
+	init();
+}
+
 
 /* Apply a single move to the cube position */
 void cubepos::move(int move) {
@@ -226,7 +244,7 @@ void cubepos::leftMult (int symIdx){
 }
 
 /* Multiply the cube state by a symmetry on the right */
-void cubepos::rightMult (int symIdx, cubepos c){
+void cubepos::rightMult (int symIdx, cubepos &c){
 	for (int i = 0; i < 24; i++){
 		c.centers[i] = centers[symCenters[symIdx][i]];
 		c.edges[i] = edges[symEdges[symIdx][i]];
@@ -234,7 +252,7 @@ void cubepos::rightMult (int symIdx, cubepos c){
 }
 
 /* Conjugate the cube state by a symmetry */
-void cubepos::conjugate (int symIdx, cubepos c){
+void cubepos::conjugate (int symIdx, cubepos &c){
 	rightMult( invSymIdx[symIdx], c );
 	c.leftMult( symIdx );
 }
@@ -247,12 +265,12 @@ void cubepos::initMoveConjugate(){
 	cubepos cube3;
 
 	for (int i=0; i<N_MOVES; i++){
-		cube.identity();
+		cube = identity_cube;
 		cube.move(i);
 		for (int j=0; j<N_SYM; j++){
 			cube.conjugate(j, cube2);
 			for (int k=0; k<N_MOVES; k++){
-				cube3.identity();
+				cube3 = identity_cube;
 				cube3.move(k);
 				char isMove = 1;
 				for (int l=0; l<24; l++){
@@ -265,6 +283,8 @@ void cubepos::initMoveConjugate(){
 					moveConjugate[i][j] = k;
 					break;
 				}
+				//else
+				//	std::cout << "Error in cubepos::initMoveConjugate: Could not find a conjugate move" << std::endl;
 			}
 		}
 	}
@@ -290,3 +310,4 @@ void cubepos::initCnk() {
     }
   }
 }
+

@@ -44,14 +44,14 @@ class subcube {
     }
 
     void init();
-    void unpack_center_r(cubepos cube, unsigned short center_r);
-    unsigned short pack_center_r(cubepos cube);
-    void unpack_edge(cubepos cube, unsigned int edge_raw);
-    unsigned int pack_edge(cubepos cube);
+    void unpack_center_r(cubepos &cube, unsigned short center_r);
+    unsigned short pack_center_r(const cubepos &cube);
+    void unpack_edge(cubepos &cube, unsigned int edge_raw);
+    unsigned int pack_edge(const cubepos &cube);
     void initSym2Raw ();
-    void pack_all(cubepos cube);
+    void pack_all(const cubepos &cube);
     void initMove ();
-    void moveTo( int m, subcube c );
+    void moveTo( int m, subcube &c );
     void canonize( int sym );
 
 };
