@@ -2,10 +2,9 @@
 #include <iostream>
 #include <cstring>
 
-void rotationorder(){
-	std::cout << "cubepos_test: are all rotations of order 4... ";
+void rotation_order(){
+	std::cout << "cubepos_test: all rotations have an order of 4... ";
 
-	/* Are all rotations of a cubepos of order 4? */
 	cubepos cp;
 	char testok = 1;
 	for (int m=0; m<N_MOVES; m++){
@@ -25,8 +24,8 @@ void rotationorder(){
 		std::cout << "failed" << std::endl;
 }
 
-void symmetryorder(){
-	std::cout << "cubepos_test: are symmetries of the right order... ";
+void symmetry_order(){
+	std::cout << "cubepos_test: all symmetries have the correct order... ";
 
 	int testbad = 0;
 	int symmetry_orders[48] = {
@@ -76,13 +75,33 @@ void symmetryorder(){
 		std::cout << "passed" << std::endl;
 }
 
+void symmetry_inverse(){
+	std::cout << "cubepos_test: all symmetries have the right inverse... ";
+
+	int testok = 1;
+	for (int sym=0; sym<48; sym++){
+		for (int i=0; i<24; i++){
+			if (cubepos::symEdges[sym][cubepos::symEdges[cubepos::invSymIdx[sym]][i]] != i)
+				testok = 0;
+			if (cubepos::symCenters[sym][cubepos::symCenters[cubepos::invSymIdx[sym]][i]] != i)
+				testok = 0;
+		}
+	}
+
+	if (testok)
+		std::cout << "passed" << std::endl;
+	else
+		std::cout << "failed" << std::endl;
+}
+
 int main() {
 
 	cubepos cp;
 	cp.init();
 
-	rotationorder();
-	symmetryorder();
+	rotation_order();
+	symmetry_order();
+	symmetry_inverse();
 
 	return 0;
 }
