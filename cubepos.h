@@ -80,8 +80,6 @@
 #define N_STAGE_MOVES 36
 #define N_SYM 48
 
-extern const class cubepos identity_cube;
-
 class cubepos {
 	public :
 		unsigned char centers[24];
@@ -95,8 +93,14 @@ class cubepos {
 			return std::memcmp(this, &cp, sizeof(cp)) != 0;
 		}
 
+		inline cubepos& operator=(const cubepos &cp) {
+			std::memcpy(edges, cp.edges, 24);
+			std::memcpy(centers, cp.centers, 24);
+			return *this;
+		  }
+
 		/* Constructors */
-		inline cubepos(const cubepos &cp=identity_cube) { *this = cp; }
+		cubepos();
 		cubepos(int,int,int);
 
     	/* Convert general move notation to stage move notation (ordered so that moves for each stage are (1..N_s)) */

@@ -3,18 +3,18 @@
 #include "coset.h"
 
 unsigned int subcube::sym2raw[SUBCUBE_N_COORD_EDGES];
-unsigned short subcube::raw2sym[SUBCUBE_N_RAW_COORD_EDGES];
-unsigned int subcube::hasSym[SUBCUBE_N_COORD_EDGES];
+unsigned int subcube::raw2sym[SUBCUBE_N_RAW_COORD_EDGES];
+unsigned int subcube::hasSym[SUBCUBE_N_COORD_EDGES] = {0};
 unsigned short subcube::moveTableCenterR[SUBCUBE_N_COORD_CENTER_R][SUBCUBE_N_MOVES_ALL];
-unsigned short subcube::moveTableCenterFB[SUBCUBE_N_COORD_CENTER_FB][SUBCUBE_N_MOVES_ALL];
-unsigned short subcube::moveTableEdge[SUBCUBE_N_COORD_EDGES][SUBCUBE_N_MOVES_ALL];
+unsigned int subcube::moveTableCenterFB[SUBCUBE_N_COORD_CENTER_FB][SUBCUBE_N_MOVES_ALL];
+unsigned int subcube::moveTableEdge[SUBCUBE_N_COORD_EDGES][SUBCUBE_N_MOVES_ALL];
 unsigned short subcube::conjTableCenterR[SUBCUBE_N_COORD_CENTER_R][SUBCUBE_N_MOVES_ALL];
-unsigned short subcube::conjTableCenterFB[SUBCUBE_N_COORD_CENTER_FB][SUBCUBE_N_MOVES_ALL];
+unsigned int subcube::conjTableCenterFB[SUBCUBE_N_COORD_CENTER_FB][SUBCUBE_N_MOVES_ALL];
 
 void subcube::init(){
-  std::cout << "Subcube: initSym2Raw" << std::endl;
+  std::cout << "subcube: initSym2Raw" << std::endl;
   initSym2Raw();
-  std::cout << "Subcube: initMove" << std::endl;
+  std::cout << "subcube: initMove" << std::endl;
   initMove();
 }
 
@@ -24,7 +24,7 @@ void subcube::unpack_center_r(cubepos &cube, unsigned short center_raw)
   unsigned char udfbl = 0;
   int r = 4;
   for (int i = 23; i >= 0; --i) {
-    if (center_raw < cube.Cnk[i][r] ) {
+    if (center_raw < cubepos::Cnk[i][r] ) {
       cube.centers[i] = udfbl++/4;
     } else {
       center_raw -= cubepos::Cnk[i][r--];
@@ -51,7 +51,7 @@ void subcube::unpack_edge(cubepos &cube, unsigned int edge_raw)
   unsigned char r_edge = 0;
   unsigned char l_edge = 12;
   int r = 12;
-  for (int i = 23; i >= 0; --i) {
+  for (int i = 23; i >= 0; i--) {
     if (edge_raw < cubepos::Cnk[i][r] ) {
       cube.edges[i] = l_edge++;
     } else {
@@ -79,7 +79,7 @@ void subcube::initSym2Raw (){
   cubepos cube1;
   cubepos cube2;
 
-  unsigned char isRepTable[(SUBCUBE_N_RAW_COORD_EDGES>>3) + 1];
+  unsigned char isRepTable[(SUBCUBE_N_RAW_COORD_EDGES>>3) + 1] = {0};
   for (int u = 0; u < SUBCUBE_N_RAW_COORD_EDGES; ++u) {
     if (get1bit(isRepTable, u)) continue;
     raw2sym[u] = repIdx << SUBCUBE_SYM_SHIFT;
@@ -95,7 +95,7 @@ void subcube::initSym2Raw (){
     sym2raw[repIdx++] = u;
   }
   if(repIdx != SUBCUBE_N_COORD_EDGES) {
-    std::cout << "The number of sym coordinates is not correct: " << repIdx;
+    std::cout << "The number of sym coordinates is not correct: " << repIdx << std::endl;
   }
 }
 

@@ -4,17 +4,17 @@
 
 /* Definition of static variables (more c++ random stuff) */
 unsigned int coset::sym2raw[COSET_N_COORD];
-unsigned short coset::raw2sym[COSET_N_RAW_COORD];
-unsigned long long coset::hasSym[COSET_N_COORD];
-unsigned short coset::moveTable[COSET_N_COORD][COSET_N_MOVES];
+unsigned int coset::raw2sym[COSET_N_RAW_COORD];
+unsigned long long coset::hasSym[COSET_N_COORD] = {0};
+unsigned int coset::moveTable[COSET_N_COORD][COSET_N_MOVES];
 unsigned char coset::ptable[COSET_N_COORD>>1];
 
 void coset::init(){
-  std::cout << "Coset: initSym2Raw" << std::endl;
+  std::cout << "coset: initSym2Raw" << std::endl;
   initSym2Raw();
-  std::cout << "Coset: initMove" << std::endl;
+  std::cout << "coset: initMove" << std::endl;
   initMove();
-  std::cout << "Coset: fillPruningTable" << std::endl;
+  std::cout << "coset: fillPruningTable" << std::endl;
   fillPruningTable();
 }
 
@@ -22,9 +22,9 @@ void coset::init(){
 void coset::unpack(cubepos &cube, unsigned int center_raw)
 {
   unsigned char udfb = 0;
-  unsigned char rl = 0;
+  unsigned char rl = 16;
   int r = 8;
-  for (int i = 23; i >= 0; --i) {
+  for (int i = 23; i >= 0; i--) {
     if (center_raw < cubepos::Cnk[i][r] ) {
       cube.centers[i] = udfb++/4;
     } else {
@@ -51,18 +51,21 @@ void coset::initSym2Raw (){
   cubepos cube1;
   cubepos cube2;
 
-  unsigned char isRepTable[(COSET_N_RAW_COORD>>3) + 1];
+  unsigned char isRepTable[(COSET_N_RAW_COORD>>3) + 1] = {0};
   for (int u = 0; u < COSET_N_RAW_COORD; ++u) {
+    //std::cout << "Coord " << u << std::endl;
     if (get1bit(isRepTable, u)) continue;
     raw2sym[u] = repIdx << COSET_SYM_SHIFT;
     unpack(cube1, u);
     for (int s = 1; s < COSET_N_SYM; ++s) {
-      cube1.conjugate (s, cube2);
+      //cube1.conjugate (s, cube2);
+      cube1.rightMult( cubepos::invSymIdx[s], cube2 );
       unsigned int raw_coord = pack(cube2);
+      //std::cout << "Store " << raw_coord << " for sym " << s << std::endl;
       set1bit( isRepTable, raw_coord );
       raw2sym[raw_coord] = ( repIdx << COSET_SYM_SHIFT ) + cubepos::invSymIdx[s];
       if( raw_coord == u )
-        coset::hasSym[repIdx] |= (0x1L << s);
+        hasSym[repIdx] |= (0x1L << s);
     }
     sym2raw[repIdx++] = u;
   }
@@ -94,9 +97,9 @@ void coset::initMove (){
 }
 
 void coset::moveTo( int m, coset &c ){
-  c.center_rl_sym = moveTable[center_rl_sym][cubepos::moveConjugateStage[m][sym]];
-  c.sym = cubepos::symIdxMultiply[c.center_rl_sym & COSET_SYM_MASK][sym];
-  c.center_rl_sym >>= COSET_SYM_SHIFT;
+  unsigned int newcenter = moveTable[center_rl_sym][cubepos::moveConjugateStage[m][sym]];
+  c.center_rl_sym = (unsigned short) (newcenter >> COSET_SYM_SHIFT);
+  c.sym = cubepos::symIdxMultiply[newcenter & COSET_SYM_MASK][sym];
 }
 
 void coset::fillPruningTable(){
@@ -159,7 +162,7 @@ void coset::fillPruningTable(){
         unique++;
 
         /* Counting symmetries in our position */
-        unsigned long long symS = coset::hasSym[solvedState];
+        unsigned long long symS = coset::hasSym[idx];
         for (int k=0; symS != 0; symS>>=1, k++) {
           if ((symS & 0x1L) == 0) continue;
           nsym++;

@@ -6,6 +6,9 @@ void rotation_order(){
 	std::cout << "cubepos_test: all rotations have an order of 4... ";
 
 	cubepos cp;
+	cubepos identity_cp;
+	identity_cp.identity();
+	
 	char testok = 1;
 	for (int m=0; m<N_MOVES; m++){
 		cp.identity();
@@ -13,7 +16,7 @@ void rotation_order(){
 		cp.move(m);
 		cp.move(m);
 		cp.move(m);
-		if (cp != identity_cube){
+		if (cp != identity_cp){
 			testok = 0;
 			break;
 		}
@@ -94,14 +97,29 @@ void symmetry_inverse(){
 		std::cout << "failed" << std::endl;
 }
 
-int main() {
+void symmetry_mult_inverse(){
+	std::cout << "cubepos_test: multiplication of inverse symmetries gives id... ";
 
-	cubepos cp;
-	cp.init();
+	int testok = 1;
+	for (int sym=0; sym<48; sym++){
+		if (cubepos::symIdxMultiply[sym][cubepos::invSymIdx[sym]] != 0)
+			testok = 0;
+		if (cubepos::symIdxMultiply[cubepos::invSymIdx[sym]][sym] != 0)
+			testok = 0;
+	}
+
+	if (testok)
+		std::cout << "passed" << std::endl;
+	else
+		std::cout << "failed" << std::endl;
+}
+
+int main() {
 
 	rotation_order();
 	symmetry_order();
 	symmetry_inverse();
+	symmetry_mult_inverse();
 
 	return 0;
 }

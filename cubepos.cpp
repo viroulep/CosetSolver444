@@ -2,7 +2,6 @@
 #include <iostream>
 
 /* Definition of static variables (more c++ random stuff) */
-const cubepos identity_cube(0,0,0);
 int cubepos::stage2moves[N_STAGE_MOVES] = {
 	MOVE_Uf1, MOVE_Uf2, MOVE_Uf3, MOVE_Rf2, MOVE_Ff1, MOVE_Ff2, MOVE_Ff3, 
 	MOVE_Df1, MOVE_Df2, MOVE_Df3, MOVE_Lf2, MOVE_Bf1, MOVE_Bf2, MOVE_Bf3, 
@@ -47,10 +46,10 @@ void cubepos::identity() {
 }
 
 cubepos::cubepos(int,int,int) {
-	identity();
 	init();
 }
 
+cubepos::cubepos() {}
 
 /* Apply a single move to the cube position */
 void cubepos::move(int move) {
@@ -265,12 +264,13 @@ void cubepos::initMoveConjugate(){
 	cubepos cube3;
 
 	for (int i=0; i<N_MOVES; i++){
-		cube = identity_cube;
+		cube.identity();
 		cube.move(i);
 		for (int j=0; j<N_SYM; j++){
+			moveConjugate[i][j] = -1;
 			cube.conjugate(j, cube2);
 			for (int k=0; k<N_MOVES; k++){
-				cube3 = identity_cube;
+				cube3.identity();
 				cube3.move(k);
 				char isMove = 1;
 				for (int l=0; l<24; l++){
@@ -283,9 +283,9 @@ void cubepos::initMoveConjugate(){
 					moveConjugate[i][j] = k;
 					break;
 				}
-				//else
-				//	std::cout << "Error in cubepos::initMoveConjugate: Could not find a conjugate move" << std::endl;
 			}
+			if (moveConjugate[i][j] == -1)
+				std::cout << "Error in cubepos::initMoveConjugate: Could not find a conjugate move" << std::endl;
 		}
 	}
 

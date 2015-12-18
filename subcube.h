@@ -23,15 +23,15 @@ class subcube {
     unsigned char sym;
     
     static unsigned int sym2raw[SUBCUBE_N_COORD_EDGES]; // Get a representative of a sym-coordinate
-    static unsigned short raw2sym[SUBCUBE_N_RAW_COORD_EDGES]; // Get the sym-coordinate of a raw coordinate
+    static unsigned int raw2sym[SUBCUBE_N_RAW_COORD_EDGES]; // Get the sym-coordinate of a raw coordinate
     static unsigned int hasSym[SUBCUBE_N_COORD_EDGES]; // Stores which positions are symmetric to which symmetries
 
     static unsigned short moveTableCenterR[SUBCUBE_N_COORD_CENTER_R][SUBCUBE_N_MOVES_ALL]; // Move table of the center R
-    static unsigned short moveTableCenterFB[SUBCUBE_N_COORD_CENTER_FB][SUBCUBE_N_MOVES_ALL]; // Move table of the center FB
-    static unsigned short moveTableEdge[SUBCUBE_N_COORD_EDGES][SUBCUBE_N_MOVES_ALL]; // Move table of the edge sym-coordinate
+    static unsigned int moveTableCenterFB[SUBCUBE_N_COORD_CENTER_FB][SUBCUBE_N_MOVES_ALL]; // Move table of the center FB
+    static unsigned int moveTableEdge[SUBCUBE_N_COORD_EDGES][SUBCUBE_N_MOVES_ALL]; // Move table of the edge sym-coordinate
 
     static unsigned short conjTableCenterR[SUBCUBE_N_COORD_CENTER_R][SUBCUBE_N_MOVES_ALL]; // Conjugate table of the center R
-    static unsigned short conjTableCenterFB[SUBCUBE_N_COORD_CENTER_FB][SUBCUBE_N_MOVES_ALL]; // Conjugate table of the center FB
+    static unsigned int conjTableCenterFB[SUBCUBE_N_COORD_CENTER_FB][SUBCUBE_N_MOVES_ALL]; // Conjugate table of the center FB
     
     /* Set one bit to 1 in the table at a certain index. */
     inline static void set1bit(unsigned char table[], int index) {

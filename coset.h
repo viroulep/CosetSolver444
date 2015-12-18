@@ -17,9 +17,9 @@ class coset {
     unsigned char sym;
     
     static unsigned int sym2raw[COSET_N_COORD]; // Get a representative of a sym-coordinate
-    static unsigned short raw2sym[COSET_N_RAW_COORD]; // Get the sym-coordinate of a raw coordinate
+    static unsigned int raw2sym[COSET_N_RAW_COORD]; // Get the sym-coordinate of a raw coordinate
     static unsigned long long hasSym[COSET_N_COORD]; // Stores which positions are symmetric to which symmetries
-    static unsigned short moveTable[COSET_N_COORD][COSET_N_MOVES]; // Move table of the sym-coordinate
+    static unsigned int moveTable[COSET_N_COORD][COSET_N_MOVES]; // Move table of the sym-coordinate
     
     static unsigned char ptable[COSET_N_COORD>>1]; // Distance table of all coset positions
 
