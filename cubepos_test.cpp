@@ -7,7 +7,6 @@ void rotation_order(){
 
 	cubepos cp;
 	cubepos identity_cp;
-	identity_cp.identity();
 	
 	char testok = 1;
 	for (int m=0; m<N_MOVES; m++){

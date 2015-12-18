@@ -80,6 +80,56 @@
 #define N_STAGE_MOVES 36
 #define N_SYM 48
 
+/*
+Edges
+------
+
+There are 24 "edge" cubies, numbered 0 to 23.
+The home positions of these cubies are labeled in the diagram below.
+Each edge cubie has two exposed faces, so there are two faces labelled with each number.
+
+                -------------
+                |   14  2   |
+                | 1   U   15|
+                |13        3|
+                |    0 12   |
+    -------------------------------------------------
+    |    1 13   |    0 12   |    3 15   |    2 14   |
+    | 9   L   20|20   F   11|11   R   22|22   B    9|
+    |21        8| 8       23|23       10|10       21|
+    |   17  5   |   18  6   |   19  7   |   16  4   |
+    -------------------------------------------------
+                |   18  6   |
+                | 5   D   19|
+                |17        7|
+                |    4 16   |
+                -------------
+
+Centers
+-------
+
+There are 24 "center" cubies. They are numbered 0 to 23 as shown.
+
+                -------------
+                |           |
+                |    3  1   |
+                |    0  2   |
+                |           |
+    -------------------------------------------------
+    |           |           |           |           |
+    |   16 19   |   10  8   |   21 22   |   14 12   |
+    |   18 17   |    9 11   |   23 20   |   13 15   |
+    |           |           |           |           |
+    -------------------------------------------------
+                |           |
+                |    6  4   |
+                |    5  7   |
+                |           |
+                -------------
+
+*/
+
+
 class cubepos {
 	public :
 		unsigned char centers[24];
@@ -121,13 +171,12 @@ class cubepos {
 
 		/* Perform the permutation cycle (a b c d) on the tab array */
 		static inline void cycle(unsigned char tab[], int a, int b, int c, int d, int times){
-			if (times <= 0) return;
 			unsigned char temp = tab[d];
 			tab[d] = tab[c];
 			tab[c] = tab[b];
 			tab[b] = tab[a];
 			tab[a] = temp;
-			if(times > 1)
+			if(times > 0)
 				cycle(tab, a, b, c, d, times - 1);
 		}
 

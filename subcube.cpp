@@ -63,7 +63,7 @@ void subcube::unpack_edge(cubepos &cube, unsigned int edge_raw)
 
 /* Pack a cube into the raw edge coord */
 unsigned int subcube::pack_edge(const cubepos &cube){
-  unsigned short edge = 0;
+  unsigned int edge = 0;
   int r = 12;
   unsigned short last_edge = cube.edges[23];
   for (int i = 23; i >= 0; i--) {
@@ -80,12 +80,13 @@ void subcube::initSym2Raw (){
   cubepos cube2;
 
   unsigned char isRepTable[(SUBCUBE_N_RAW_COORD_EDGES>>3) + 1] = {0};
-  for (int u = 0; u < SUBCUBE_N_RAW_COORD_EDGES; ++u) {
+  for (int u = 0; u < SUBCUBE_N_RAW_COORD_EDGES; u++) {
     if (get1bit(isRepTable, u)) continue;
     raw2sym[u] = repIdx << SUBCUBE_SYM_SHIFT;
     unpack_edge(cube1, u);
-    for (int s = 1; s < SUBCUBE_N_SYM; ++s) {
-      cube1.conjugate (s, cube2);
+    for (int s = 1; s < SUBCUBE_N_SYM; s++) {
+      //cube1.conjugate (s, cube2);
+      cube1.rightMult( cubepos::invSymIdx[s], cube2 );
       unsigned int raw_coord = pack_edge(cube2);
       set1bit( isRepTable, raw_coord );
       raw2sym[raw_coord] = ( repIdx << SUBCUBE_SYM_SHIFT ) + cubepos::invSymIdx[s];

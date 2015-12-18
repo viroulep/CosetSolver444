@@ -49,120 +49,98 @@ cubepos::cubepos(int,int,int) {
 	init();
 }
 
-cubepos::cubepos() {}
+cubepos::cubepos() {
+	identity();
+}
 
 /* Apply a single move to the cube position */
 void cubepos::move(int move) {
-	int rot = (move % 3) + 1;
+	int rot = move % 3;
 	int layer = move / 3;
 	switch (layer) {
 		case 0: // U
 			cycle(centers, 0, 3, 1, 2, rot);
-			cycle(edges, 0, 12, 1, 14, rot);
-			cycle(edges, 4, 8, 5, 10, rot);
+			cycle(edges, 0, 1, 2, 3, rot);
+			cycle(edges, 12, 13, 14, 15, rot);
 			break;
 		case 1: // u
-			cycle(centers, 16, 10, 21, 14, rot);
-			cycle(centers, 19, 8, 22, 12, rot);
-			cycle(edges, 16, 22, 19, 21, rot);
+			cycle(centers, 10, 16, 14, 21, rot);
+			cycle(centers, 8, 19, 12, 22, rot);
+			cycle(edges, 11, 20, 9, 22, rot);
 			break;
 		case 2: // Uw
-			cycle(centers, 0, 3, 1, 2, rot);
-			cycle(centers, 16, 10, 21, 14, rot);
-			cycle(centers, 19, 8, 22, 12, rot);
-			cycle(edges, 0, 12, 1, 14, rot);
-			cycle(edges, 4, 8, 5, 10, rot);
-			cycle(edges, 16, 22, 19, 21, rot);
+			cubepos::move(MOVE_Uf1+rot);
+			cubepos::move(MOVE_Us1+rot);
 			break;
 		case 3: // D
 			cycle(centers, 4, 7, 5, 6, rot);
-			cycle(edges, 2, 15, 3, 13, rot);
-			cycle(edges, 6, 11, 7, 9, rot);
+			cycle(edges, 4, 5, 6, 7, rot);
+			cycle(edges, 16, 17, 18, 19, rot);
 			break;
 		case 4: // d
-			cycle(centers, 18, 13, 23, 9, rot);
-			cycle(centers, 17, 15, 20, 11, rot);
-			cycle(edges, 17, 23, 18, 20, rot);
+			cycle(centers, 18, 9, 23, 13, rot);
+			cycle(centers, 17, 11, 20, 15, rot);
+			cycle(edges, 8, 23, 10, 21, rot);
 			break;
 		case 5: // Dw
-			cycle(centers, 4, 7, 5, 6, rot);
-			cycle(centers, 18, 13, 23, 9, rot);
-			cycle(centers, 17, 15, 20, 11, rot);
-			cycle(edges, 2, 15, 3, 13, rot);
-			cycle(edges, 6, 11, 7, 9, rot);
-			cycle(edges, 17, 23, 18, 20, rot);
+			cubepos::move(MOVE_Df1+rot);
+			cubepos::move(MOVE_Ds1+rot);
 			break;
 		case 6: // L
-			cycle(centers, 8, 11, 9, 10, rot);
-			cycle(edges, 8, 20, 9, 22, rot);
-			cycle(edges, 12, 16, 13, 18, rot);
+			cycle(centers, 16, 19, 17, 18, rot);
+			cycle(edges, 1, 20, 5, 21, rot);
+			cycle(edges, 13, 8, 17, 9, rot);
 			break;
 		case 7: // l
-			cycle(centers, 16, 6, 20, 3, rot);
-			cycle(centers, 18, 5, 22, 0, rot);
-			cycle(edges, 0, 6, 3, 5, rot);
+			cycle(centers, 10, 6, 15, 3, rot);
+			cycle(centers, 9, 5, 12, 0, rot);
+			cycle(edges, 0, 18, 4, 14, rot);
 			break;
 		case 8: // Lw
-			cycle(centers, 8, 11, 9, 10, rot);
-			cycle(centers, 16, 6, 20, 3, rot);
-			cycle(centers, 18, 5, 22, 0, rot);
-			cycle(edges, 8, 20, 9, 22, rot);
-			cycle(edges, 12, 16, 13, 18, rot);
-			cycle(edges, 0, 6, 3, 5, rot);
+			cubepos::move(MOVE_Lf1+rot);
+			cubepos::move(MOVE_Ls1+rot);
 			break;
 		case 9: // R
-			cycle(centers, 12, 15, 13, 14, rot);
-			cycle(edges, 10, 23, 11, 21, rot);
-			cycle(edges, 14, 19, 15, 17, rot);
+			cycle(centers, 20, 23, 21, 22, rot);
+			cycle(edges, 3, 22, 7, 23, rot);
+			cycle(edges, 15, 10, 19, 11, rot);
 			break;
 		case 10: // r
-			cycle(centers, 19, 1, 23, 4, rot);
-			cycle(centers, 17, 2, 21, 7, rot);
-			cycle(edges, 1, 7, 2, 4, rot);
+			cycle(centers, 8, 1, 13, 4, rot);
+			cycle(centers, 11, 2, 14, 7, rot);
+			cycle(edges, 2, 16, 6, 12, rot);
 			break;
 		case 11: // Rw
-			cycle(centers, 12, 15, 13, 14, rot);
-			cycle(centers, 19, 1, 23, 4, rot);
-			cycle(centers, 17, 2, 21, 7, rot);
-			cycle(edges, 10, 23, 11, 21, rot);
-			cycle(edges, 14, 19, 15, 17, rot);
-			cycle(edges, 1, 7, 2, 4, rot);
+			cubepos::move(MOVE_Rf1+rot);
+			cubepos::move(MOVE_Rs1+rot);
 			break;
 		case 12: // F
-			cycle(centers, 16, 19, 17, 18, rot);
-			cycle(edges, 0, 21, 2, 20, rot);
-			cycle(edges, 4, 17, 6, 16, rot);
+			cycle(centers, 8, 11, 9, 10, rot);
+			cycle(edges, 0, 11, 6, 8, rot);
+			cycle(edges, 12, 23, 18, 20, rot);
 			break;
 		case 13: // f
-			cycle(centers, 0, 14, 4, 11, rot);
-			cycle(centers, 2, 13, 6, 8, rot);
-			cycle(edges, 8, 14, 11, 13, rot);
+			cycle(centers, 0, 21, 4, 17, rot);
+			cycle(centers, 2, 23, 6, 19, rot);
+			cycle(edges, 3, 19, 5, 13, rot);
 			break;
 		case 14: // Fw
-			cycle(centers, 16, 19, 17, 18, rot);
-			cycle(centers, 0, 14, 4, 11, rot);
-			cycle(centers, 2, 13, 6, 8, rot);
-			cycle(edges, 0, 21, 2, 20, rot);
-			cycle(edges, 4, 17, 6, 16, rot);
-			cycle(edges, 8, 14, 11, 13, rot);
+			cubepos::move(MOVE_Ff1+rot);
+			cubepos::move(MOVE_Fs1+rot);
 			break;
 		case 15: // B
-			cycle(centers, 20, 23, 21, 22, rot);
-			cycle(edges, 1, 22, 3, 23, rot);
-			cycle(edges, 5, 18, 7, 19, rot);
+			cycle(centers, 12, 15, 13, 14, rot);
+			cycle(edges, 2, 9, 4, 10, rot);
+			cycle(edges, 14, 21, 16, 22, rot);
 			break;
 		case 16: // b
-			cycle(centers, 1, 10, 5, 15, rot);
-			cycle(centers, 3, 9, 7, 12, rot);
-			cycle(edges, 9, 15, 10, 12, rot);
+			cycle(centers, 1, 16, 5, 20, rot);
+			cycle(centers, 3, 18, 7, 22, rot);
+			cycle(edges, 1, 17, 7, 15, rot);
 			break;
 		case 17: // Bw
-			cycle(centers, 20, 23, 21, 22, rot);
-			cycle(centers, 1, 10, 5, 15, rot);
-			cycle(centers, 3, 9, 7, 12, rot);
-			cycle(edges, 1, 22, 3, 23, rot);
-			cycle(edges, 5, 18, 7, 19, rot);
-			cycle(edges, 9, 15, 10, 12, rot);
+			cubepos::move(MOVE_Bf1+rot);
+			cubepos::move(MOVE_Bs1+rot);
 			break;
 	}
 }
@@ -170,8 +148,8 @@ void cubepos::move(int move) {
 /* Initialise the arrays of permutations of the different symmetries */
 void cubepos::initSymTables(){
 
-	static const unsigned char symRLEdges[24] = {4, 5, 6, 7, 0, 1, 2, 3, 14, 15, 12, 13, 10, 11, 8, 9, 21, 20, 23, 22, 17, 16, 19, 18};
-	static const unsigned char symRLCenters[24] = {2, 3, 0, 1, 6, 7, 4, 5, 14, 15, 12, 13, 10, 11, 8, 9, 19, 18, 17, 16, 23, 22, 21, 20};
+	static const unsigned char symRLEdges[24] = {12, 15, 14, 13, 16, 19, 18, 17, 23, 22, 21, 20, 0, 3, 2, 1, 4, 7, 6, 5, 11, 10, 9, 8};
+	static const unsigned char symRLCenters[24] = {2, 3, 0, 1, 6, 7, 4, 5, 10, 11, 8, 9, 14, 15, 12, 13, 22, 23, 20, 21, 18, 19, 16, 17};
 
 	int i, b, c, d, e, idx=0;
 	identity();
