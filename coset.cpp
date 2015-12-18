@@ -10,6 +10,11 @@ unsigned int coset::moveTable[COSET_N_COORD][COSET_N_MOVES];
 unsigned char coset::ptable[COSET_N_COORD>>1];
 
 void coset::init(){
+  static int initialized = 0;
+  if (initialized)
+    return;
+  initialized = 1;
+  
   std::cout << "coset: initSym2Raw" << std::endl;
   initSym2Raw();
   std::cout << "coset: initMove" << std::endl;
