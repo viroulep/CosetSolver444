@@ -10,12 +10,19 @@ unsigned int subcube::moveTableCenterFB[SUBCUBE_N_COORD_CENTER_FB][SUBCUBE_N_MOV
 unsigned int subcube::moveTableEdge[SUBCUBE_N_COORD_EDGES][SUBCUBE_N_MOVES_ALL];
 unsigned short subcube::conjTableCenterR[SUBCUBE_N_COORD_CENTER_R][SUBCUBE_N_MOVES_ALL];
 unsigned int subcube::conjTableCenterFB[SUBCUBE_N_COORD_CENTER_FB][SUBCUBE_N_MOVES_ALL];
+unsigned char subcube::centerRToSC[SUBCUBE_N_COORD_CENTER_R-SUBCUBE_MIN_CENTER_R_SC];
+unsigned char subcube::moveTableCenterRSC[SUBCUBE_N_COORD_CENTER_R_SC][SUBCUBE_N_MOVES];
+unsigned char subcube::conjTableCenterRSC[SUBCUBE_N_COORD_CENTER_R_SC][SUBCUBE_N_MOVES];
 
 void subcube::init(){
   std::cout << "subcube: initSym2Raw" << std::endl;
   initSym2Raw();
   std::cout << "subcube: initMove" << std::endl;
   initMove();
+  std::cout << "subcube: initToSC" << std::endl;
+  initToSC();
+  std::cout << "subcube: initMoveSC" << std::endl;
+  initMoveSC();
 }
 
 /* Unpack a centerR coord to a cube */
@@ -23,7 +30,7 @@ void subcube::unpack_center_r(cubepos &cube, unsigned short center_raw)
 {
   unsigned char udfbl = 0;
   int r = 4;
-  for (int i = 23; i >= 0; --i) {
+  for (int i = 23; i >= 0; i--) {
     if (center_raw < cubepos::Cnk[i][r] ) {
       cube.centers[i] = udfbl++/4;
     } else {
@@ -39,6 +46,37 @@ unsigned short subcube::pack_center_r(const cubepos &cube){
   int r = 4;
   for (int i = 23; i >= 0; i--) {
     if (cube.centers[i] == 5) {
+      center += cubepos::Cnk[i][r--];
+    }
+  }
+  return center;
+}
+
+/* Unpack a centerR coord inside RL faces (subcube) */
+void subcube::unpack_center_r_sc(cubepos &cube, unsigned char center_raw)
+{
+  unsigned char udfb = 0;
+  int r = 4;
+  for (int i = 7; i >= 0; i--) {
+    if (center_raw < cubepos::Cnk[i][r] ) {
+      cube.centers[16+i] = 4;
+    } else {
+      center_raw -= cubepos::Cnk[i][r--];
+      cube.centers[16+i] = 5;
+    }
+  }
+  for (int i = 0; i < 16; i++)
+      cube.centers[i] = udfb++/4;
+
+}
+
+/* Pack a subcube into the centerRL coord */
+unsigned char subcube::pack_center_r_sc(const cubepos &cube){
+  unsigned char center = 0;
+  int r = 4;
+  unsigned char last_center = cube.centers[23];
+  for (int i = 7; i >= 0; i--) {
+    if (cube.centers[16+i] != last_center) {
       center += cubepos::Cnk[i][r--];
     }
   }
@@ -65,7 +103,7 @@ void subcube::unpack_edge(cubepos &cube, unsigned int edge_raw)
 unsigned int subcube::pack_edge(const cubepos &cube){
   unsigned int edge = 0;
   int r = 12;
-  unsigned short last_edge = cube.edges[23];
+  unsigned char last_edge = cube.edges[23];
   for (int i = 23; i >= 0; i--) {
     if ((last_edge < 12) != (cube.edges[i] < 12)) {
       edge += cubepos::Cnk[i][r--];
@@ -171,3 +209,43 @@ void subcube::canonize( int sym ){
   center_fb = conjTableCenterFB[center_fb][sym];
   sym = 0;
 }
+
+/* Initialise the conversion arrays to subcube coordinates */
+void subcube::initToSC(){
+
+	// Initialise the array with -1 to later catch bad conversions
+	for (int c=0; c<SUBCUBE_N_COORD_CENTER_R-SUBCUBE_MIN_CENTER_R_SC; c++)
+		centerRToSC[c] = 0xff;
+
+	cubepos cp;
+	for (unsigned short cr = 0; cr < 70; cr++) {
+		unpack_center_r_sc(cp, cr);
+		unsigned short old_center_r = pack_center_r(cp);
+		unsigned short new_center_r = pack_center_r_sc(cp);
+		if (old_center_r < SUBCUBE_MIN_CENTER_R_SC){
+			std::cout << "Error in generating center_r subcube conversion: bad min" << std::endl;
+			break;
+		}
+		centerRToSC[old_center_r - SUBCUBE_MIN_CENTER_R_SC] = new_center_r;
+	}
+}
+
+void subcube::initMoveSC(){
+  cubepos cube1;
+  cubepos cube2;
+
+  /* Initialise subcube centerR move and conj arrays */
+  for (int u = 0; u < SUBCUBE_N_COORD_CENTER_R_SC; u++) {
+    unpack_center_r_sc(cube1, u);
+    for (int m = 0; m < SUBCUBE_N_MOVES; m++) {
+      cube2 = cube1;
+      cube2.move (cubepos::stage2moves[m]);
+      moveTableCenterRSC[u][m] = pack_center_r_sc(cube2);
+    }
+    for (int s = 0; s < SUBCUBE_N_SYM; s++) {
+      cube1.conjugate (s, cube2);
+      conjTableCenterRSC[u][s] = pack_center_r_sc(cube2);
+    }
+  }
+}
+

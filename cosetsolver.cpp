@@ -4,6 +4,8 @@
 
 int main(int argc, char *argv[]) {
 
+	cubepos cp;
+	cp.init();
 	coset c;
 	c.init();
 	subcube s;

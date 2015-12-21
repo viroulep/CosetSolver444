@@ -14,6 +14,9 @@ const int SUBCUBE_SYM_MASK = ( 1 << SUBCUBE_SYM_SHIFT ) - 1;
 const int SUBCUBE_N_MOVES_ALL = 36;
 const int SUBCUBE_N_MOVES = 28;
 
+const int SUBCUBE_MIN_CENTER_R_SC = 4844; // Determined programmatically
+const int SUBCUBE_N_COORD_CENTER_R_SC = 35;
+
 class subcube {
     public :
     unsigned short center_r;
@@ -32,7 +35,11 @@ class subcube {
 
     static unsigned short conjTableCenterR[SUBCUBE_N_COORD_CENTER_R][SUBCUBE_N_MOVES_ALL]; // Conjugate table of the center R
     static unsigned int conjTableCenterFB[SUBCUBE_N_COORD_CENTER_FB][SUBCUBE_N_MOVES_ALL]; // Conjugate table of the center FB
-    
+   
+    static unsigned char centerRToSC[SUBCUBE_N_COORD_CENTER_R-SUBCUBE_MIN_CENTER_R_SC]; // Convert a full cube center r to subcube center r coordinate
+    static unsigned char moveTableCenterRSC[SUBCUBE_N_COORD_CENTER_R_SC][SUBCUBE_N_MOVES]; // Move table of the subcube center R
+    static unsigned char conjTableCenterRSC[SUBCUBE_N_COORD_CENTER_R_SC][SUBCUBE_N_MOVES]; // Conjugate table of the subcube center R
+ 
     /* Set one bit to 1 in the table at a certain index. */
     inline static void set1bit(unsigned char table[], int index) {
       table[index>>3] |= (unsigned char)( 1 << ( index & 0x7 ));
@@ -46,6 +53,8 @@ class subcube {
     void init();
     void unpack_center_r(cubepos &cube, unsigned short center_r);
     unsigned short pack_center_r(const cubepos &cube);
+    void unpack_center_r_sc(cubepos &cube, unsigned char center_r);
+    unsigned char pack_center_r_sc(const cubepos &cube);
     void unpack_edge(cubepos &cube, unsigned int edge_raw);
     unsigned int pack_edge(const cubepos &cube);
     void initSym2Raw ();
@@ -53,6 +62,8 @@ class subcube {
     void initMove ();
     void moveTo( int m, subcube &c );
     void canonize( int sym );
+    void initToSC();
+    void initMoveSC();
 
 };
 
