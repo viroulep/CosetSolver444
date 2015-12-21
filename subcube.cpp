@@ -13,6 +13,10 @@ unsigned int subcube::conjTableCenterFB[SUBCUBE_N_COORD_CENTER_FB][SUBCUBE_N_MOV
 unsigned char subcube::centerRToSC[SUBCUBE_N_COORD_CENTER_R-SUBCUBE_MIN_CENTER_R_SC];
 unsigned char subcube::moveTableCenterRSC[SUBCUBE_N_COORD_CENTER_R_SC][SUBCUBE_N_MOVES];
 unsigned char subcube::conjTableCenterRSC[SUBCUBE_N_COORD_CENTER_R_SC][SUBCUBE_N_MOVES];
+unsigned int subcube::reorientEdge[SUBCUBE_N_COORD_EDGES][2];
+unsigned short subcube::reorientCenterR[SUBCUBE_N_COORD_CENTER_R][2];
+unsigned int subcube::reorientCenterFB[SUBCUBE_N_COORD_CENTER_FB][2];
+
 
 void subcube::init(){
   std::cout << "subcube: initSym2Raw" << std::endl;
@@ -23,6 +27,8 @@ void subcube::init(){
   initToSC();
   std::cout << "subcube: initMoveSC" << std::endl;
   initMoveSC();
+  std::cout << "subcube: initReorientSC" << std::endl;
+  initReorientSC();
 }
 
 /* Unpack a centerR coord to a cube */
@@ -230,6 +236,7 @@ void subcube::initToSC(){
 	}
 }
 
+/* Initialise move and conj arrays for centerR inside the subgropu */
 void subcube::initMoveSC(){
   cubepos cube1;
   cubepos cube2;
@@ -249,3 +256,37 @@ void subcube::initMoveSC(){
   }
 }
 
+/* After the first stage, the RL centers might not be in RL faces.
+ * Thus we need to reorient the cube so that RL centers are in RL faces
+ * so that we can solve inside the subgroup */
+void subcube::initReorientSC(){
+
+  cubepos cp1;
+  cubepos cp2;
+
+  for (int esym=0; esym<SUBCUBE_N_COORD_EDGES; esym++){
+    unpack_edge(cp1, sym2raw[esym]);
+    cp1.rightMult(16, cp2);
+    reorientEdge[esym][0] = raw2sym[pack_edge(cp2)];
+    cp1.rightMult(16, cp2);
+    reorientEdge[esym][1] = raw2sym[pack_edge(cp2)];
+  }
+
+  for (int cr=0; cr<SUBCUBE_N_COORD_CENTER_R; cr++){
+    unpack_center_r(cp1, cr);
+    cp1.rightMult(16, cp2);
+    reorientCenterR[cr][0] = pack_center_r(cp2);
+    cp1.rightMult(16, cp2);
+    reorientCenterR[cr][1] = pack_center_r(cp2);
+  }
+
+  /* We might not need to build this array, and use coset::conj instead. */
+  coset c;
+  for (int cfb=0; cfb<SUBCUBE_N_COORD_CENTER_FB; cfb++){
+    c.unpack(cp1, cfb);
+    cp1.rightMult(16, cp2);
+    reorientCenterFB[cfb][0] = c.pack(cp2);
+    cp1.rightMult(16, cp2);
+    reorientCenterFB[cfb][1] = c.pack(cp2);
+  }
+}
