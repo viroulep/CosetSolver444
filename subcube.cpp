@@ -149,7 +149,7 @@ void subcube::pack_all(const cubepos &cube){
   center_r = pack_center_r(cube);
   coset c;
   center_fb = c.pack(cube);
-  edge_raw = pack_edge(cube);
+  unsigned int edge_raw = pack_edge(cube);
   edge_sym = raw2sym[edge_raw];
   sym = edge_sym & SUBCUBE_SYM_MASK;
   edge_sym >>= SUBCUBE_SYM_SHIFT;
@@ -210,7 +210,7 @@ void subcube::moveTo( int m, subcube &c ){
 }
 
 /* Get the canon state without any symmetry applied */
-void subcube::canonize( int sym ){
+void subcube::canonize(){
   center_r = conjTableCenterR[center_r][sym];
   center_fb = conjTableCenterFB[center_fb][sym];
   sym = 0;
@@ -290,3 +290,61 @@ void subcube::initReorientSC(){
     reorientCenterFB[cfb][1] = c.pack(cp2);
   }
 }
+
+/* Convert the cube coordinates to subcube coordinates, and return if it is a success */
+bool subcube::convertToSC(){
+	/* Canonize the cube before reorienting */
+	canonize();
+
+	/* Reorienting the cube, using center_r to guess the right orientation. */
+	int reorient = -1;
+
+	int new_center_r = center_r;
+	while ((reorient < 2) && ((new_center_r < SUBCUBE_MIN_CENTER_R_SC) || (centerRToSC[new_center_r-SUBCUBE_MIN_CENTER_R_SC] == 0xff))) {
+		reorient++;
+		if (reorient < 2)
+			new_center_r = reorientCenterR[center_r][reorient];
+	}
+
+	if (reorient == 2){
+		std::cout << "subcube: error when converting to SC, center_r not in SC" << std::endl;
+		return false;
+	}
+	
+	if (reorient >= 0){
+		center_r = new_center_r;
+		center_fb = reorientCenterFB[center_fb][reorient];
+		edge_sym = reorientEdge[edge_sym][reorient];
+		sym = edge_sym & SUBCUBE_SYM_MASK;
+		/* TODO: We might use the next line instead, and don't call the canonize method earlier. */
+		//sym = cubepos::symIdxMultiply[edge_sym & SUBCUBE_SYM_MASK][sym];
+		edge_sym >>= SUBCUBE_SYM_SHIFT;
+	}
+
+	/* Check the center_fb coordinate */
+	if (center_fb >= SUBCUBE_N_COORD_CENTER_FB_SC){
+		std::cout << "subcube: error when converting to SC, center_fb not in SC" << std::endl;
+		return false;
+	}
+
+	/* Transform the center_r coordinate */
+	center_r = centerRToSC[center_r-SUBCUBE_MIN_CENTER_R_SC];
+	return true;
+}
+
+/* Apply a move to the subgroup state inside H */
+void subcube::moveToSC( int m, subcube &c ){
+  c.center_r = moveTableCenterRSC[center_r][m];
+  c.center_fb = moveTableCenterFB[center_fb][m];
+  c.edge_sym = moveTableEdge[edge_sym][cubepos::moveConjugateStage[m][sym]];
+  c.sym = cubepos::symIdxMultiply[c.edge_sym & SUBCUBE_SYM_MASK][sym];
+  c.edge_sym >>= SUBCUBE_SYM_SHIFT;
+}
+
+/* Get the canon state without any symmetry applied in H */
+void subcube::canonizeSC(){
+  center_r = conjTableCenterRSC[center_r][sym];
+  center_fb = conjTableCenterFB[center_fb][sym];
+  sym = 0;
+}
+

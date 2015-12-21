@@ -81,7 +81,7 @@ void coset::initSym2Raw (){
 
 /* Pack all coordinates from the full cube position, and compute the sym coordinate */
 void coset::pack_all(const cubepos &cube){
-  center_rl_raw = pack(cube);
+  unsigned int center_rl_raw = pack(cube);
   center_rl_sym = raw2sym[center_rl_raw];
   sym = center_rl_sym & COSET_SYM_MASK;
   center_rl_sym >>= COSET_SYM_SHIFT;

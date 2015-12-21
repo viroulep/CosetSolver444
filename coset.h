@@ -12,7 +12,6 @@ const int COSET_N_MOVES = 36;
 
 class coset {
     public :
-    unsigned int center_rl_raw;
     unsigned short center_rl_sym;
     unsigned char sym;
     
