@@ -16,7 +16,7 @@ int cubepos::invSymIdx[N_SYM];
 int cubepos::symIdxMultiply[N_SYM][N_SYM];
 int cubepos::moveConjugate[N_MOVES][N_SYM];
 int cubepos::moveConjugateStage[N_STAGE_MOVES][N_SYM];
-int cubepos::Cnk[25][25];
+unsigned int cubepos::Cnk[25][25];
 
 /* Initialise static arrays and stuff */
 void cubepos::init() {

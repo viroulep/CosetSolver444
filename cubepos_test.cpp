@@ -115,6 +115,9 @@ void symmetry_mult_inverse(){
 
 int main() {
 
+	cubepos cp;
+	cp.init();
+
 	rotation_order();
 	symmetry_order();
 	symmetry_inverse();

@@ -41,6 +41,10 @@ class coset {
         return (ptable[index >> 1] >> ((index & 1) << 2)) & 0x0f;
     }
 
+    inline bool isSolved(){
+        return center_rl_sym == 0;
+    }
+
     void init();
     void unpack(cubepos &cube, unsigned int center_raw);
     unsigned int pack(const cubepos &cube);

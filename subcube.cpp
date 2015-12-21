@@ -80,7 +80,7 @@ void subcube::initSym2Raw (){
   cubepos cube2;
 
   unsigned char isRepTable[(SUBCUBE_N_RAW_COORD_EDGES>>3) + 1] = {0};
-  for (int u = 0; u < SUBCUBE_N_RAW_COORD_EDGES; u++) {
+  for (unsigned int u = 0; u < SUBCUBE_N_RAW_COORD_EDGES; u++) {
     if (get1bit(isRepTable, u)) continue;
     raw2sym[u] = repIdx << SUBCUBE_SYM_SHIFT;
     unpack_edge(cube1, u);

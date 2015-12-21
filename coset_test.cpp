@@ -54,8 +54,36 @@ void move_cp(){
 		std::cout << "failed" << std::endl;
 }
 
+void solved(){
+	std::cout << "coset_test: scrambling inside the subgroup gives a solved state... ";
+
+	cubepos cp;
+	coset c;
+
+	int testok = 1;
+	for (int i=0; i<1000; i++){
+		cp.identity();
+		for (int m=0; m<100; m++){
+			int move = (int) ( 28 * drand48() );
+			cp.move(cubepos::stage2moves[move]);
+		}
+		c.pack_all(cp);
+		if (!c.isSolved()) {
+			testok = 0;
+			break;
+		}
+	}
+
+	if (testok)
+		std::cout << "passed" << std::endl;
+	else
+		std::cout << "failed" << std::endl;
+}
+
 int main() {
 
+	cubepos cp;
+	cp.init();
 	coset c;
 	c.init();
 
@@ -64,6 +92,7 @@ int main() {
 
 	pack_unpack();
 	move_cp();
+	solved();
 
 	return 0;
 }

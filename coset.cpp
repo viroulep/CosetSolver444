@@ -57,7 +57,7 @@ void coset::initSym2Raw (){
   cubepos cube2;
 
   unsigned char isRepTable[(COSET_N_RAW_COORD>>3) + 1] = {0};
-  for (int u = 0; u < COSET_N_RAW_COORD; ++u) {
+  for (unsigned int u = 0; u < COSET_N_RAW_COORD; ++u) {
     //std::cout << "Coord " << u << std::endl;
     if (get1bit(isRepTable, u)) continue;
     raw2sym[u] = repIdx << COSET_SYM_SHIFT;
@@ -179,6 +179,6 @@ void coset::fillPruningTable(){
     total_unique += unique;
     std::cout << std::setw(2) << depth << std::setw(12) << pos << std::setw(10) << unique << std::endl;
   }
-  std::cout << "-- ------------ ----------" << std::endl;
-  std::cout << std::setw(15) << total_pos << std::setw(10) << total_unique << std::endl;
+  std::cout << "-- ----------- ---------" << std::endl;
+  std::cout << std::setw(14) << total_pos << std::setw(10) << total_unique << std::endl;
 }

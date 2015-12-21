@@ -167,7 +167,7 @@ class cubepos {
 		static int moveConjugate[N_MOVES][N_SYM]; // Mapping of moves by symmetries
 		static int moveConjugateStage[N_STAGE_MOVES][N_SYM]; // Mapping of moves by symmetries in the stage space
 
-	    static int Cnk[25][25]; // binomial coefficients
+		static unsigned int Cnk[25][25]; // binomial coefficients
 
 		/* Perform the permutation cycle (a b c d) on the tab array */
 		static inline void cycle(unsigned char tab[], int a, int b, int c, int d, int times){
@@ -193,6 +193,6 @@ class cubepos {
 		void initCnk();
 };
 
-static cubepos cubepos_initialization_hack(1,2,3);
+//static cubepos cubepos_initialization_hack(1,2,3);
 
 #endif
