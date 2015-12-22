@@ -55,6 +55,10 @@ void move_cp(){
 	int testok = 1;
 	for (int i=0; i<1000; i++){
 		cp.identity();
+		for (int m=0; m<100; m++){
+			int move = (int) ( SUBCUBE_N_MOVES_ALL * drand48() );
+			cp.move(cubepos::stage2moves[move]);
+		}
 		sc.pack_all(cp);
 		for (int m=0; m<100; m++){
 			int move = (int) ( SUBCUBE_N_MOVES_ALL * drand48() );
@@ -86,6 +90,10 @@ void move_cp_sc(){
 	int testok = 1;
 	for (int i=0; i<1000; i++){
 		cp.identity();
+		for (int m=0; m<100; m++){
+			int move = (int) ( SUBCUBE_N_MOVES * drand48() );
+			cp.move(cubepos::stage2moves[move]);
+		}
 		sc.pack_all(cp);
 		bool isSC = sc.convertToSC();
 		if (!isSC) {
@@ -94,8 +102,8 @@ void move_cp_sc(){
 		}
 		for (int m=0; m<100; m++){
 			int move = (int) ( SUBCUBE_N_MOVES * drand48() );
-			cp.move(move);
-			sc.moveToSC(cubepos::moves2stage[move], sc);
+			cp.move(cubepos::stage2moves[move]);
+			sc.moveToSC(move, sc);
 		}
 		sc2.pack_all(cp);
 		bool isSC2 = sc2.convertToSC();
@@ -133,7 +141,7 @@ int main() {
 
 	pack_unpack();
 	move_cp();
-	//move_cp_sc();
+	move_cp_sc();
 
 	return 0;
 }

@@ -179,7 +179,8 @@ void subcube::initMove (){
       moveTableCenterR[u][m] = pack_center_r(cube2);
     }
     for (int s = 0; s < SUBCUBE_N_SYM; s++) {
-      cube1.conjugate (s, cube2);
+      //cube1.conjugate (s, cube2);
+      cube1.rightMult (cubepos::invSymIdx[s], cube2);
       conjTableCenterR[u][s] = pack_center_r(cube2);
     }
   }
@@ -194,7 +195,8 @@ void subcube::initMove (){
       moveTableCenterFB[u][m] = c.pack(cube2);
     }
     for (int s = 0; s < SUBCUBE_N_SYM; s++) {
-      cube1.conjugate (s, cube2);
+      //cube1.conjugate (s, cube2);
+      cube1.rightMult (cubepos::invSymIdx[s], cube2);
       conjTableCenterFB[u][s] = c.pack(cube2);
     }
   }
@@ -214,6 +216,29 @@ void subcube::canonize(){
   center_r = conjTableCenterR[center_r][sym];
   center_fb = conjTableCenterFB[center_fb][sym];
   sym = 0;
+
+  /* We may have symmetric position for edges, so that there are multiple 
+   * (edge_sym, sym) pairs that correspond to the same position.
+   * To get a canonical state, we iterate through all the symmetric positions
+   * and return the minimum of the two other coordinates in lexicographic order
+   */
+  unsigned int allsyms = hasSym[edge_sym];
+  if (allsyms == 0) return; // No symmetry in edges position
+
+  unsigned short min_center_r = center_r;
+  unsigned int min_center_fb = center_fb;
+  for (int s=0; allsyms!=0; allsyms>>=1, s++) {
+    if ((allsyms & 1) == 0) continue;
+    unsigned short new_center_r = conjTableCenterR[center_r][s];
+    if (new_center_r > min_center_r) continue;
+    unsigned int new_center_fb = conjTableCenterFB[center_fb][s];
+    if ((new_center_r < min_center_r) || (new_center_fb < min_center_fb)) {
+      min_center_r = new_center_r;
+      min_center_fb = new_center_fb;
+    } 
+  }
+  center_r = min_center_r;
+  center_fb = min_center_fb;
 }
 
 /* Initialise the conversion arrays to subcube coordinates */
@@ -346,5 +371,28 @@ void subcube::canonizeSC(){
   center_r = conjTableCenterRSC[center_r][sym];
   center_fb = conjTableCenterFB[center_fb][sym];
   sym = 0;
+
+  /* We may have symmetric position for edges, so that there are multiple 
+   * (edge_sym, sym) pairs that correspond to the same position.
+   * To get a canonical state, we iterate through all the symmetric positions
+   * and return the minimum of the two other coordinates in lexicographic order
+   */
+  unsigned int allsyms = hasSym[edge_sym];
+  if (allsyms == 0) return; // No symmetry in edges position
+
+  unsigned short min_center_r = center_r;
+  unsigned int min_center_fb = center_fb;
+  for (int s=0; allsyms!=0; allsyms>>=1, s++) {
+    if ((allsyms & 1) == 0) continue;
+    unsigned short new_center_r = conjTableCenterRSC[center_r][s];
+    if (new_center_r > min_center_r) continue;
+    unsigned int new_center_fb = conjTableCenterFB[center_fb][s];
+    if ((new_center_r < min_center_r) || (new_center_fb < min_center_fb)) {
+      min_center_r = new_center_r;
+      min_center_fb = new_center_fb;
+    } 
+  }
+  center_r = min_center_r;
+  center_fb = min_center_fb;
 }
 
