@@ -161,9 +161,9 @@ void subcube::initMove (){
   cubepos cube2;
 
   /* Initialise edges move array */  
-  for (int u = 0; u < SUBCUBE_N_COORD_EDGES; ++u) {
+  for (int u = 0; u < SUBCUBE_N_COORD_EDGES; u++) {
     unpack_edge(cube1, sym2raw[u]);
-    for (int m = 0; m < SUBCUBE_N_MOVES_ALL; ++m) {
+    for (int m = 0; m < SUBCUBE_N_MOVES_ALL; m++) {
       cube2 = cube1;
       cube2.move (cubepos::stage2moves[m]);
       moveTableEdge[u][m] = raw2sym[pack_edge(cube2)];
@@ -171,14 +171,14 @@ void subcube::initMove (){
   }
 
   /* Initialise centerR move and conj arrays */
-  for (int u = 0; u < SUBCUBE_N_COORD_CENTER_R; ++u) {
+  for (int u = 0; u < SUBCUBE_N_COORD_CENTER_R; u++) {
     unpack_center_r(cube1, u);
-    for (int m = 0; m < SUBCUBE_N_MOVES_ALL; ++m) {
+    for (int m = 0; m < SUBCUBE_N_MOVES_ALL; m++) {
       cube2 = cube1;
       cube2.move (cubepos::stage2moves[m]);
       moveTableCenterR[u][m] = pack_center_r(cube2);
     }
-    for (int s = 0; s < SUBCUBE_N_SYM; ++s) {
+    for (int s = 0; s < SUBCUBE_N_SYM; s++) {
       cube1.conjugate (s, cube2);
       conjTableCenterR[u][s] = pack_center_r(cube2);
     }
@@ -186,14 +186,14 @@ void subcube::initMove (){
 
   /* Initialise centerFB move and conj arrays */
   coset c; // We can reuse the pack and unpack methods of the coset class.
-  for (int u = 0; u < SUBCUBE_N_COORD_CENTER_FB; ++u) {
+  for (int u = 0; u < SUBCUBE_N_COORD_CENTER_FB; u++) {
     c.unpack(cube1, u);
-    for (int m = 0; m < SUBCUBE_N_MOVES_ALL; ++m) {
+    for (int m = 0; m < SUBCUBE_N_MOVES_ALL; m++) {
       cube2 = cube1;
       cube2.move (cubepos::stage2moves[m]);
       moveTableCenterFB[u][m] = c.pack(cube2);
     }
-    for (int s = 0; s < SUBCUBE_N_SYM; ++s) {
+    for (int s = 0; s < SUBCUBE_N_SYM; s++) {
       cube1.conjugate (s, cube2);
       conjTableCenterFB[u][s] = c.pack(cube2);
     }

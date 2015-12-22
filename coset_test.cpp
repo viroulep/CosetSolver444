@@ -35,11 +35,19 @@ void move_cp(){
 	int testok = 1;
 	for (int i=0; i<1000; i++){
 		cp.identity();
+
+		/* Scramble the cubepos first */
+		for (int m=0; m<100; m++){
+			int move = (int) ( COSET_N_MOVES * drand48() );
+			cp.move(cubepos::stage2moves[move]);
+		}
+
+		/* Apply the same moves on the cubepos and the coset */
 		c.pack_all(cp);
 		for (int m=0; m<100; m++){
-			int move = (int) ( N_MOVES * drand48() );
-			cp.move(move);
-			c.moveTo(cubepos::moves2stage[move], c);
+			int move = (int) ( COSET_N_MOVES * drand48() );
+			cp.move(cubepos::stage2moves[move]);
+			c.moveTo(move, c);
 		}
 		c2.pack_all(cp);
 		if (c.center_rl_sym != c2.center_rl_sym) {

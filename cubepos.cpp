@@ -157,7 +157,7 @@ void cubepos::initSymTables(){
 		centers[i] = (unsigned char)i; // We need to consider the cube as a super cube (unique centers) for the following
 
 	for (b=0;b<3;b++){ //SymUR3
-		for (c=0;c<2;c++){ //SymU
+		for (c=0;c<2;c++){ //SymR
 			for (d=0;d<2;d++){ //SymF2
 				for (e=0;e<2;e++){ //SymU2
 					//SymLR2
@@ -175,8 +175,8 @@ void cubepos::initSymTables(){
 				move (MOVE_Bw2);
 			}
 			idx += 4;
-			move (MOVE_Uw1);
-			move (MOVE_Dw3);
+			move (MOVE_Rw1);
+			move (MOVE_Lw3);
 		}
 		move (MOVE_Uw3);
 		move (MOVE_Dw1);
@@ -211,11 +211,12 @@ void cubepos::initSymIdxMultiply(){
 
 /* Multiply the cube state by a symmetry on the left */
 void cubepos::leftMult (int symIdx){
-	int cenN[6]; // Transform centers into unique facelets.
-	for (int c = 0; c < 6; c++) cenN[c] = 0; // Initialise the array with zeros.
+	int cenN[6] = {0}; // Transform centers into unique facelets.
 
 	for (int i = 0; i < 24; i++){
-		centers[i] = symCenters[symIdx][centers[i]*4+cenN[centers[i]]++] / 4;
+		unsigned char c = centers[i];
+		centers[i] = symCenters[symIdx][c*4+cenN[c]] / 4;
+		cenN[c] += 1;
 		edges[i] = symEdges[symIdx][edges[i]];
 	}
 }
