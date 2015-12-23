@@ -77,6 +77,8 @@ class subcube {
     void init();
     void unpack_center_r(cubepos &cube, unsigned short center_r);
     unsigned short pack_center_r(const cubepos &cube);
+    void unpack_center_fb(cubepos &cube, unsigned int center_fb);
+    unsigned int pack_center_fb(const cubepos &cube);
     void unpack_center_r_sc(cubepos &cube, unsigned char center_r);
     unsigned char pack_center_r_sc(const cubepos &cube);
     void unpack_edge(cubepos &cube, unsigned int edge_raw);
@@ -92,7 +94,7 @@ class subcube {
     bool convertToSC();
     void moveToSC( int m, subcube &c );
     void canonizeSC();
-
+    void print();
 };
 
 #endif

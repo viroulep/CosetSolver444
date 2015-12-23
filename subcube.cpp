@@ -58,6 +58,35 @@ unsigned short subcube::pack_center_r(const cubepos &cube){
   return center;
 }
 
+/* Unpack a raw centerFB coord to a cube */
+void subcube::unpack_center_fb(cubepos &cube, unsigned int center_raw)
+{
+  unsigned char udrl = 0;
+  unsigned char fb = 8;
+  int r = 8;
+  for (int i = 23; i >= 0; i--) {
+    if (center_raw < cubepos::Cnk[i][r] ) {
+      cube.centers[i] = udrl++/4;
+      if (udrl == 8) udrl = 16;
+    } else {
+      center_raw -= cubepos::Cnk[i][r--];
+      cube.centers[i] = fb++/4;
+    }
+  }
+}
+
+/* Pack a cube into the raw centerFB coord */
+unsigned int subcube::pack_center_fb(const cubepos &cube){
+  unsigned int center_raw = 0;
+  int r = 8;
+  for (int i = 23; i >= 0; i--) {
+    if ((cube.centers[i] / 2) == 1 ) {
+      center_raw += cubepos::Cnk[i][r--];
+    }
+  }
+  return center_raw;
+}
+
 /* Unpack a centerR coord inside RL faces (subcube) */
 void subcube::unpack_center_r_sc(cubepos &cube, unsigned char center_raw)
 {
@@ -147,8 +176,7 @@ void subcube::initSym2Raw (){
 /* Pack all coordinates from the full cube position, and compute the sym coordinate */
 void subcube::pack_all(const cubepos &cube){
   center_r = pack_center_r(cube);
-  coset c;
-  center_fb = c.pack(cube);
+  center_fb = pack_center_fb(cube);
   unsigned int edge_raw = pack_edge(cube);
   edge_sym = raw2sym[edge_raw];
   sym = edge_sym & SUBCUBE_SYM_MASK;
@@ -186,18 +214,17 @@ void subcube::initMove (){
   }
 
   /* Initialise centerFB move and conj arrays */
-  coset c; // We can reuse the pack and unpack methods of the coset class.
   for (int u = 0; u < SUBCUBE_N_COORD_CENTER_FB; u++) {
-    c.unpack(cube1, u);
+    unpack_center_fb(cube1, u);
     for (int m = 0; m < SUBCUBE_N_MOVES_ALL; m++) {
       cube2 = cube1;
       cube2.move (cubepos::stage2moves[m]);
-      moveTableCenterFB[u][m] = c.pack(cube2);
+      moveTableCenterFB[u][m] = pack_center_fb(cube2);
     }
     for (int s = 0; s < SUBCUBE_N_SYM; s++) {
       //cube1.conjugate (s, cube2);
       cube1.rightMult (cubepos::invSymIdx[s], cube2);
-      conjTableCenterFB[u][s] = c.pack(cube2);
+      conjTableCenterFB[u][s] = pack_center_fb(cube2);
     }
   }
 }
@@ -275,7 +302,8 @@ void subcube::initMoveSC(){
       moveTableCenterRSC[u][m] = pack_center_r_sc(cube2);
     }
     for (int s = 0; s < SUBCUBE_N_SYM; s++) {
-      cube1.conjugate (s, cube2);
+      //cube1.conjugate (s, cube2);
+      cube1.rightMult (cubepos::invSymIdx[s], cube2);
       conjTableCenterRSC[u][s] = pack_center_r_sc(cube2);
     }
   }
@@ -293,7 +321,7 @@ void subcube::initReorientSC(){
     unpack_edge(cp1, sym2raw[esym]);
     cp1.rightMult(16, cp2);
     reorientEdge[esym][0] = raw2sym[pack_edge(cp2)];
-    cp1.rightMult(16, cp2);
+    cp1.rightMult(32, cp2);
     reorientEdge[esym][1] = raw2sym[pack_edge(cp2)];
   }
 
@@ -301,25 +329,23 @@ void subcube::initReorientSC(){
     unpack_center_r(cp1, cr);
     cp1.rightMult(16, cp2);
     reorientCenterR[cr][0] = pack_center_r(cp2);
-    cp1.rightMult(16, cp2);
+    cp1.rightMult(32, cp2);
     reorientCenterR[cr][1] = pack_center_r(cp2);
   }
 
-  /* We might not need to build this array, and use coset::conj instead. */
-  coset c;
   for (int cfb=0; cfb<SUBCUBE_N_COORD_CENTER_FB; cfb++){
-    c.unpack(cp1, cfb);
+    unpack_center_fb(cp1, cfb);
     cp1.rightMult(16, cp2);
-    reorientCenterFB[cfb][0] = c.pack(cp2);
-    cp1.rightMult(16, cp2);
-    reorientCenterFB[cfb][1] = c.pack(cp2);
+    reorientCenterFB[cfb][0] = pack_center_fb(cp2);
+    cp1.rightMult(32, cp2);
+    reorientCenterFB[cfb][1] = pack_center_fb(cp2);
   }
 }
 
 /* Convert the cube coordinates to subcube coordinates, and return if it is a success */
 bool subcube::convertToSC(){
 	/* Canonize the cube before reorienting */
-	canonize();
+	//canonize();
 
 	/* Reorienting the cube, using center_r to guess the right orientation. */
 	int reorient = -1;
@@ -340,9 +366,9 @@ bool subcube::convertToSC(){
 		center_r = new_center_r;
 		center_fb = reorientCenterFB[center_fb][reorient];
 		edge_sym = reorientEdge[edge_sym][reorient];
-		sym = edge_sym & SUBCUBE_SYM_MASK;
+		//sym = edge_sym & SUBCUBE_SYM_MASK;
 		/* TODO: We might use the next line instead, and don't call the canonize method earlier. */
-		//sym = cubepos::symIdxMultiply[edge_sym & SUBCUBE_SYM_MASK][sym];
+		sym = cubepos::symIdxMultiply[edge_sym & SUBCUBE_SYM_MASK][sym];
 		edge_sym >>= SUBCUBE_SYM_SHIFT;
 	}
 
@@ -394,5 +420,9 @@ void subcube::canonizeSC(){
   }
   center_r = min_center_r;
   center_fb = min_center_fb;
+}
+
+void subcube::print(){
+  std::cout << "es: " << edge_sym << " s: " << (int)sym << " cr: " << center_r << " cfb: " << center_fb << std::endl;
 }
 
