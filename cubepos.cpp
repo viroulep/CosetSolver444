@@ -290,3 +290,122 @@ void cubepos::initCnk() {
   }
 }
 
+/* Initialise the arrays of allowed sequence of rotations during the search */
+void cubepos::initSyll() {
+
+  /* We fill the array for the U/D axis, and then copy to the other two axes */
+  unsigned char next_syll_axis[N_SYLL_AXIS][18];
+  unsigned long long mask_syll_axis[N_SYLL_AXIS] = {0};
+  std::memset(next_syll_axis, SYLL_END, sizeof next_syll_axis);
+
+  /* If the first move is U, U' or U2, second move can be u, u', u2, D, D', D2, d, d', d2 */
+  mask_syll_axis[SYLL_Uf1] = (1<<MOVE_Us1)|(1<<MOVE_Us2)|(1<<MOVE_Us3)|
+                             (1<<MOVE_Df1)|(1<<MOVE_Df2)|(1<<MOVE_Df3)|
+                             (1<<MOVE_Ds1)|(1<<MOVE_Ds2)|(1<<MOVE_Ds3);
+  mask_syll_axis[SYLL_Uf2] = (1<<MOVE_Us1)|(1<<MOVE_Us2)|(1<<MOVE_Us3)|
+                             (1<<MOVE_Df1)|(1<<MOVE_Df2)|(1<<MOVE_Df3)|
+                             (1<<MOVE_Ds1)|(1<<MOVE_Ds2)|(1<<MOVE_Ds3);
+  mask_syll_axis[SYLL_Uf3] = (1<<MOVE_Us1)|(1<<MOVE_Us2)|(1<<MOVE_Us3)|
+                             (1<<MOVE_Df1)|(1<<MOVE_Df2)|(1<<MOVE_Df3)|
+                             (1<<MOVE_Ds1)|(1<<MOVE_Ds2)|(1<<MOVE_Ds3);
+
+  /* If the first move is u, second move can be D, D2, d, d2 */
+  mask_syll_axis[SYLL_Us1] = (1<<MOVE_Df1)|(1<<MOVE_Df2)|
+                             (1<<MOVE_Ds1)|(1<<MOVE_Ds2);
+
+  /* If the first move is u', second move can be D', D2, d', d2 */
+  mask_syll_axis[SYLL_Us3] = (1<<MOVE_Df3)|(1<<MOVE_Df2)|
+                             (1<<MOVE_Ds3)|(1<<MOVE_Ds2);
+
+  /* If the first move is u2, second move can be D, D', d, d' */
+  mask_syll_axis[SYLL_Us2] = (1<<MOVE_Df1)|(1<<MOVE_Df3)|
+                             (1<<MOVE_Ds1)|(1<<MOVE_Ds3);
+
+  /* If the first move is D, second move can be d', d2 */
+  mask_syll_axis[SYLL_Df1] = (1<<MOVE_Ds3)|(1<<MOVE_Ds2);
+
+  /* If the first move is D', second move can be d, d2 */
+  mask_syll_axis[SYLL_Df3] = (1<<MOVE_Ds1)|(1<<MOVE_Ds2);
+
+  /* If the first move is D2, second move can be d, d' */
+  mask_syll_axis[SYLL_Df2] = (1<<MOVE_Ds1)|(1<<MOVE_Ds3);
+
+  /* If the first move is d, d' or d2, no second move is allowed in this axis */
+
+  /* If the first two moves are U u', then third move must be D2 */
+  next_syll_axis[SYLL_Uf1][MOVE_Us3] = SYLL_Uf1Us3;
+  mask_syll_axis[SYLL_Uf1Us3] = (1<<MOVE_Df2);
+
+  /* If the first two moves are U u2, then third move must be D */
+  next_syll_axis[SYLL_Uf1][MOVE_Us2] = SYLL_Uf1Us2;
+  mask_syll_axis[SYLL_Uf1Us2] = (1<<MOVE_Df1);
+
+  /* If the first two moves are U' u, then third move must be D2 */
+  next_syll_axis[SYLL_Uf3][MOVE_Us1] = SYLL_Uf3Us1;
+  mask_syll_axis[SYLL_Uf3Us1] = (1<<MOVE_Df2);
+
+  /* If the first two moves are U' u2, then third move must be D' */
+  next_syll_axis[SYLL_Uf3][MOVE_Us2] = SYLL_Uf3Us2;
+  mask_syll_axis[SYLL_Uf3Us2] = (1<<MOVE_Df3);
+
+  /* If the first two moves are U2 u, then third move must be D */
+  next_syll_axis[SYLL_Uf2][MOVE_Us1] = SYLL_Uf2Us1;
+  mask_syll_axis[SYLL_Uf2Us1] = (1<<MOVE_Df1);
+
+  /* If the first two moves are U2 u', then third move must be D' */
+  next_syll_axis[SYLL_Uf2][MOVE_Us3] = SYLL_Uf2Us3;
+  mask_syll_axis[SYLL_Uf2Us3] = (1<<MOVE_Df3);
+
+
+
+  /* Now we initialise the full syllable move array, using the coset move indexing instead of the cubepos move indexing */ 
+  unsigned char next_syll[N_SYLL_AXIS][N_STAGE_MOVES];
+
+  for (int syll=0; syll<N_SYLL; syll++){
+    for (int move=0; move<N_STAGE_MOVES; move++){
+      unsigned char cpmove = stage2moves[move];
+      unsigned char axis = cpmove/18;
+      unsigned char rot = cpmove%18;
+
+      unsigned char syll_axis = syll/N_SYLL_AXIS;
+      unsigned char syll_rot = syll%N_SYLL_AXIS;
+
+      /* If we didn't make any move yet, or if the axis of the syllable and the move are different,
+       * moving is getting to the single syllable */
+      if (syll_axis != axis) {
+        if (rot < 12) { // U, u or D layer move
+          next_syll[syll][move] = axis*N_SYLL_AXIS+rot;
+        }
+        else {
+          next_syll[syll][move] = axis*N_SYLL_AXIS+SYLL_END;
+        }
+      }
+      else {
+        next_syll[syll][move] = axis*N_SYLL_AXIS+next_syll_axis[syll_rot][rot];
+      }
+    }
+  }
+
+  /* We also initialise the full move mask for each syllable, using again the coset move indexing */
+  unsigned long long mask_syll[N_SYLL_AXIS] = {0};
+
+  /* When no move was done, all moves are allowed */
+  mask_syll[SYLL_NOMOVE] = (0x1ull << N_STAGE_MOVES) - 1;
+
+  for (int syll=0; syll<N_SYLL-1; syll++){
+    unsigned char syll_axis = syll/N_SYLL_AXIS;
+    unsigned char syll_rot = syll%N_SYLL_AXIS;
+    unsigned long long mask_axis = mask_syll_axis[syll_rot];
+
+    /* Convert the mask to coset move indexing */
+    unsigned long long new_mask = (0x1ull << N_STAGE_MOVES) - 1;
+    for (int move=0; move<N_STAGE_MOVES; move++){
+      unsigned char cmove = stage2moves[move];
+      if (cmove >= 18) continue; // Not UD axis
+      if (!(mask_axis & (1 << cmove))) // Move not allowed
+        new_mask &= ~(0x1ull << moves2stage[syll_axis*18+cmove]);
+    }
+    mask_syll[syll] = new_mask;
+  }
+}
+

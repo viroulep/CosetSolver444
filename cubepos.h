@@ -80,6 +80,33 @@
 #define N_STAGE_MOVES 36
 #define N_SYM 48
 
+#define SYLL_Uf1  0 // Syllable U
+#define SYLL_Uf2  1 // Syllable U2
+#define SYLL_Uf3  2 // Syllable U'
+
+#define SYLL_Us1  3 // Syllable u
+#define SYLL_Us2  4 // Syllable u2
+#define SYLL_Us3  5 // Syllable u'
+
+#define SYLL_Df1  9 // Syllable D
+#define SYLL_Df2  10 // Syllable D2
+#define SYLL_Df3  11 // Syllable D'
+
+#define SYLL_Uf1Us3  6  // Syllable U u'
+#define SYLL_Uf1Us2  7  // Syllable U u2
+#define SYLL_Uf3Us1  8  // Syllable U' u
+#define SYLL_Uf3Us2  12 // Syllable U' u2
+#define SYLL_Uf2Us1  13 // Syllable U2 u
+#define SYLL_Uf2Us3  14 // Syllable U2 u'
+
+#define SYLL_END 15 // Any syllable that does not allow
+                    // any more move on the same axis
+
+#define N_SYLL_AXIS  16
+
+#define SYLL_NOMOVE  N_SYLL_AXIS*3
+#define N_SYLL       N_SYLL_AXIS*3+1
+
 /*
 Edges
 ------
@@ -191,6 +218,7 @@ class cubepos {
 		void conjugate (int symIdx, cubepos &c);
 		void initMoveConjugate();
 		void initCnk();
+		void initSyll();
 };
 
 //static cubepos cubepos_initialization_hack(1,2,3);
