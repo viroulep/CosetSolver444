@@ -16,7 +16,8 @@ void slowsearch1(const coset &c, const subcube &sc, int togo, unsigned char syll
       probes++;
       subcube scs;
       scs = sc;
-      scs.convertToSC();
+      bool conv = scs.convertToSC();
+      if (!conv) scs.print();
       scs.canonizeSC();
       world.insert(scs);
     }

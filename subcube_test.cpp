@@ -84,6 +84,7 @@ void move_cp_sc(){
 	std::cout << "subcube_test: moving on subcube inside H or cubepos inside H gives the same state... ";
 
 	cubepos cp;
+	cubepos cp2;
 	subcube sc;
 	subcube sc2;
 
@@ -94,7 +95,8 @@ void move_cp_sc(){
 			int move = (int) ( SUBCUBE_N_MOVES * drand48() );
 			cp.move(cubepos::stage2moves[move]);
 		}
-		sc.pack_all(cp);
+		cp.rightMult((int)(N_SYM*drand48()), cp2); // Random orientation
+		sc.pack_all(cp2);
 		bool isSC = sc.convertToSC();
 		if (!isSC) {
 			testok = -1;
@@ -102,10 +104,10 @@ void move_cp_sc(){
 		}
 		for (int m=0; m<100; m++){
 			int move = (int) ( SUBCUBE_N_MOVES * drand48() );
-			cp.move(cubepos::stage2moves[move]);
+			cp2.move(cubepos::stage2moves[move]);
 			sc.moveToSC(move, sc);
 		}
-		sc2.pack_all(cp);
+		sc2.pack_all(cp2);
 		bool isSC2 = sc2.convertToSC();
 		if (!isSC2) {
 			testok = -1;
