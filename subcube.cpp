@@ -230,7 +230,7 @@ void subcube::initMove (){
 }
 
 /* Apply a move to the subgroup state */
-void subcube::moveTo( int m, subcube &c ){
+void subcube::moveTo( int m, subcube &c ) const{
   c.center_r = moveTableCenterR[center_r][m];
   c.center_fb = moveTableCenterFB[center_fb][m];
   c.edge_sym = moveTableEdge[edge_sym][cubepos::moveConjugateStage[m][sym]];
@@ -344,9 +344,6 @@ void subcube::initReorientSC(){
 
 /* Convert the cube coordinates to subcube coordinates, and return if it is a success */
 bool subcube::convertToSC(){
-	/* Canonize the cube before reorienting */
-	//canonize();
-
 	/* Reorienting the cube, using center_r to guess the right orientation. */
 	int reorient = -1;
 
@@ -366,8 +363,6 @@ bool subcube::convertToSC(){
 		center_r = new_center_r;
 		center_fb = reorientCenterFB[center_fb][reorient];
 		edge_sym = reorientEdge[edge_sym][reorient];
-		//sym = edge_sym & SUBCUBE_SYM_MASK;
-		/* TODO: We might use the next line instead, and don't call the canonize method earlier. */
 		sym = cubepos::symIdxMultiply[edge_sym & SUBCUBE_SYM_MASK][sym];
 		edge_sym >>= SUBCUBE_SYM_SHIFT;
 	}

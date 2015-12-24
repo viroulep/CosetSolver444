@@ -101,7 +101,7 @@ void coset::initMove (){
   }
 }
 
-void coset::moveTo( int m, coset &c ){
+void coset::moveTo( int m, coset &c ) const{
   unsigned int newcenter = moveTable[center_rl_sym][cubepos::moveConjugateStage[m][sym]];
   c.center_rl_sym = (unsigned short) (newcenter >> COSET_SYM_SHIFT);
   c.sym = cubepos::symIdxMultiply[newcenter & COSET_SYM_MASK][sym];
@@ -182,3 +182,4 @@ void coset::fillPruningTable(){
   std::cout << "-- ----------- ---------" << std::endl;
   std::cout << std::setw(14) << total_pos << std::setw(10) << total_unique << std::endl;
 }
+

@@ -40,7 +40,7 @@ class coset {
         return (ptable[index >> 1] >> ((index & 1) << 2)) & 0x0f;
     }
 
-    inline bool isSolved(){
+    inline bool isSolved() const{
         return center_rl_sym == 0;
     }
 
@@ -50,9 +50,12 @@ class coset {
     void initSym2Raw();
     void pack_all(const cubepos &cube);
     void initMove();
-    void moveTo( int m, coset &c );
+    void moveTo( int m, coset &c ) const;
     void fillPruningTable();
 
+    inline int distance() const{
+      return readTable(center_rl_sym);
+    }
 };
 
 #endif

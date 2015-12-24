@@ -196,6 +196,9 @@ class cubepos {
 
 		static unsigned int Cnk[25][25]; // binomial coefficients
 
+		static unsigned char next_syll[N_SYLL_AXIS][N_STAGE_MOVES];
+		static unsigned long long mask_syll[N_SYLL_AXIS];
+
 		/* Perform the permutation cycle (a b c d) on the tab array */
 		static inline void cycle(unsigned char tab[], int a, int b, int c, int d, int times){
 			unsigned char temp = tab[d];
@@ -222,5 +225,8 @@ class cubepos {
 };
 
 //static cubepos cubepos_initialization_hack(1,2,3);
+double walltime();
+double duration();
+
 
 #endif

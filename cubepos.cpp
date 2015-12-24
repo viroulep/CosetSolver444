@@ -1,5 +1,6 @@
 #include "cubepos.h"
 #include <iostream>
+#include <sys/time.h>
 
 /* Definition of static variables (more c++ random stuff) */
 int cubepos::stage2moves[N_STAGE_MOVES] = {
@@ -17,6 +18,8 @@ int cubepos::symIdxMultiply[N_SYM][N_SYM];
 int cubepos::moveConjugate[N_MOVES][N_SYM];
 int cubepos::moveConjugateStage[N_STAGE_MOVES][N_SYM];
 unsigned int cubepos::Cnk[25][25];
+unsigned char cubepos::next_syll[N_SYLL_AXIS][N_STAGE_MOVES];
+unsigned long long cubepos::mask_syll[N_SYLL_AXIS] = {0};
 
 /* Initialise static arrays and stuff */
 void cubepos::init() {
@@ -358,9 +361,7 @@ void cubepos::initSyll() {
 
 
 
-  /* Now we initialise the full syllable move array, using the coset move indexing instead of the cubepos move indexing */ 
-  unsigned char next_syll[N_SYLL_AXIS][N_STAGE_MOVES];
-
+  /* Now we initialise the full syllable move array, using the coset move indexing instead of the cubepos move indexing */
   for (int syll=0; syll<N_SYLL; syll++){
     for (int move=0; move<N_STAGE_MOVES; move++){
       unsigned char cpmove = stage2moves[move];
@@ -387,7 +388,6 @@ void cubepos::initSyll() {
   }
 
   /* We also initialise the full move mask for each syllable, using again the coset move indexing */
-  unsigned long long mask_syll[N_SYLL_AXIS] = {0};
 
   /* When no move was done, all moves are allowed */
   mask_syll[SYLL_NOMOVE] = (0x1ull << N_STAGE_MOVES) - 1;
@@ -407,5 +407,20 @@ void cubepos::initSyll() {
     }
     mask_syll[syll] = new_mask;
   }
+}
+
+/* Routines for calculating the duration between two points */
+static double start;
+double walltime() {
+   struct timeval tv;
+   gettimeofday(&tv, 0);
+   return tv.tv_sec + 0.000001 * tv.tv_usec;
+}
+
+double duration() {
+   double now = walltime();
+   double r = now - start;
+   start = now;
+   return r;
 }
 
