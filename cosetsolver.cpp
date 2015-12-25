@@ -63,16 +63,15 @@ void slowsearch1(const coset &c, const subcube &sc) {
 
 int main(int argc, char *argv[]) {
 
+	std::cout << "mask: " << std::bitset<64>(cubepos::mask_syll[48]) << std::endl;
 	cubepos cp;
 	coset c;
 	subcube sc;
-        std::cout << "masi: " << std::bitset<64>(cubepos::mask_syll[48]) << std::endl;
 
 	cp.identity();
 	c.pack_all(cp);
 	sc.pack_all(cp);
 
-        std::cout << "masi: " << std::bitset<64>(cubepos::mask_syll[48]) << std::endl;
 	slowsearch1(c, sc);
 	return 0;
 }

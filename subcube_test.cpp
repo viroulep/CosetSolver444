@@ -3,7 +3,6 @@
 #include <cstdlib>
 #include <ctime>
 #include "subcube.h"
-#include "coset.h"
 
 void pack_unpack(){
 	std::cout << "subcube_test: unpacking and packing gives the same coordinate... ";
@@ -21,10 +20,9 @@ void pack_unpack(){
 		}
 	}
 
-	coset c;
 	for (unsigned int cfb=0; cfb<SUBCUBE_N_COORD_CENTER_FB; cfb++) {
-		c.unpack(cp, cfb);
-		unsigned int new_cfb = c.pack(cp);
+		sc.unpack_center_fb(cp, cfb);
+		unsigned int new_cfb = sc.pack_center_fb(cp);
 		if (new_cfb != cfb) {
 			testok = 0;
 			break;
