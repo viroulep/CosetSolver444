@@ -6,7 +6,7 @@
 #include <cstring>
 
 std::set<subcube> world;
-int maxsearchdepth = 5;
+int maxsearchdepth = 6;
 long long uniq = 0;
 long long probes = 0;
 
