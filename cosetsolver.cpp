@@ -6,7 +6,7 @@
 #include <cstring>
 
 std::set<subcube> world;
-int maxsearchdepth = 10;
+int maxsearchdepth = 5;
 long long uniq = 0;
 long long probes = 0;
 
@@ -16,8 +16,8 @@ void slowsearch1(const coset &c, const subcube &sc, int togo, unsigned char syll
       probes++;
       subcube scs;
       scs = sc;
+      //scs.print();
       bool conv = scs.convertToSC();
-      if (!conv) scs.print();
       scs.canonizeSC();
       world.insert(scs);
     }
@@ -28,10 +28,12 @@ void slowsearch1(const coset &c, const subcube &sc, int togo, unsigned char syll
   coset c2;
   subcube sc2;
 
-  unsigned long long movemask = cubepos::mask_syll[syll];
+  //unsigned long long movemask = cubepos::mask_syll[syll];
+  /* Fix that later... */
+  unsigned long long movemask = (0x1ull << N_STAGE_MOVES) - 1;
   while (movemask) {
     int mv = ffsll(movemask) - 1;
-    movemask &= movemask - 1;
+    movemask &= movemask - 0x1ull;
     c.moveTo(mv, c2);
     int nd = c2.distance();
     if (nd <= togo) {

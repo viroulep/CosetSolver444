@@ -38,6 +38,8 @@ void cubepos::init() {
 	initMoveConjugate();
 	std::cout << "cubepos: initCnk" << std::endl;
 	initCnk();
+	std::cout << "cubepos: initSyll" << std::endl;
+	initSyll();
 }
 
 /* Set the cube as the solved state */
@@ -298,7 +300,7 @@ void cubepos::initSyll() {
 
   /* We fill the array for the U/D axis, and then copy to the other two axes */
   unsigned char next_syll_axis[N_SYLL_AXIS][18];
-  unsigned long long mask_syll_axis[N_SYLL_AXIS] = {0};
+  unsigned int mask_syll_axis[N_SYLL_AXIS] = {0};
   std::memset(next_syll_axis, SYLL_END, sizeof next_syll_axis);
 
   /* If the first move is U, U' or U2, second move can be u, u', u2, D, D', D2, d, d', d2 */
@@ -395,7 +397,7 @@ void cubepos::initSyll() {
   for (int syll=0; syll<N_SYLL-1; syll++){
     unsigned char syll_axis = syll/N_SYLL_AXIS;
     unsigned char syll_rot = syll%N_SYLL_AXIS;
-    unsigned long long mask_axis = mask_syll_axis[syll_rot];
+    unsigned int mask_axis = mask_syll_axis[syll_rot];
 
     /* Convert the mask to coset move indexing */
     unsigned long long new_mask = (0x1ull << N_STAGE_MOVES) - 1;

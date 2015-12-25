@@ -95,8 +95,7 @@ void move_cp_sc(){
 			int move = (int) ( SUBCUBE_N_MOVES * drand48() );
 			cp.move(cubepos::stage2moves[move]);
 		}
-		cp.rightMult((int)(N_SYM*drand48()), cp2); // Random orientation
-		sc.pack_all(cp2);
+		sc.pack_all(cp);
 		bool isSC = sc.convertToSC();
 		if (!isSC) {
 			testok = -1;
@@ -104,9 +103,10 @@ void move_cp_sc(){
 		}
 		for (int m=0; m<100; m++){
 			int move = (int) ( SUBCUBE_N_MOVES * drand48() );
-			cp2.move(cubepos::stage2moves[move]);
+			cp.move(cubepos::stage2moves[move]);
 			sc.moveToSC(move, sc);
 		}
+		cp.rightMult(16*(int)(3*drand48()), cp2); // Random orientation
 		sc2.pack_all(cp2);
 		bool isSC2 = sc2.convertToSC();
 		if (!isSC2) {
