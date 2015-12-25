@@ -1,6 +1,6 @@
-#include "cubepos.h"
 #include <iostream>
 #include <cstring>
+#include "cubepos.h"
 
 void rotation_order(){
 	std::cout << "cubepos_test: all rotations have an order of 4... ";
@@ -114,9 +114,6 @@ void symmetry_mult_inverse(){
 }
 
 int main() {
-
-	cubepos cp;
-	cp.init();
 
 	rotation_order();
 	symmetry_order();

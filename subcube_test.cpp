@@ -1,4 +1,5 @@
 #include <iostream>
+#include <bitset>
 #include <cstdlib>
 #include <ctime>
 #include "subcube.h"
@@ -131,12 +132,7 @@ void move_cp_sc(){
 
 int main() {
 
-	cubepos cp;
-	cp.init();
-	coset c;
-	c.init();
-	subcube sc;
-	sc.init();
+        std::cout << "matt: " << std::bitset<64>(cubepos::mask_syll[48]) << std::endl;
 
 	if (lrand48() == 0)
 		srand48(time(0));

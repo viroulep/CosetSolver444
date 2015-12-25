@@ -1,6 +1,6 @@
-#include "coset.h"
 #include <iostream>
 #include <iomanip>
+#include "coset.h"
 
 /* Definition of static variables (more c++ random stuff) */
 unsigned int coset::sym2raw[COSET_N_COORD];
@@ -131,6 +131,7 @@ void coset::fillPruningTable(){
 
   /* Build the table */
   coset c;
+  coset c2;
   int depth = 0;
   while (( done < psize ) && ( depth < 15 )) {
     depth++;
@@ -139,12 +140,12 @@ void coset::fillPruningTable(){
       if (readTable(i) != (depth-1)) continue;
 
       /* Set our coset with id i */
-      center_rl_raw = i;
+      c.center_rl_raw = i;
 
       /* We apply each move to our coset */
       for (int m=0; m<COSET_N_MOVES; m++) {
-        moveTo(m, c);
-        int idx = c.center_rl_raw;
+        c.moveTo(m, c2);
+        int idx = c2.center_rl_raw;
         if (readTable(idx) != 0x0f) continue;
 
         /* Storing this new position in the distance table */
@@ -156,7 +157,7 @@ void coset::fillPruningTable(){
     total_pos += pos;
     std::cout << std::setw(2) << depth << std::setw(12) << pos << std::endl;
   }
-  std::cout << "-- ----------- ---------" << std::endl;
+  std::cout << "-- -----------" << std::endl;
   std::cout << std::setw(14) << total_pos << std::endl;
 }
 

@@ -90,11 +90,6 @@ void solved(){
 
 int main() {
 
-	cubepos cp;
-	cp.init();
-	coset c;
-	c.init();
-
 	if (lrand48() == 0)
 		srand48(time(0));
 

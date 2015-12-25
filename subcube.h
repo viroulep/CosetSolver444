@@ -64,6 +64,10 @@ class subcube {
     static unsigned short reorientCenterR[SUBCUBE_N_COORD_CENTER_R][2]; // Reorient center_r when putting RL centers in RL faces
     static unsigned int reorientCenterFB[SUBCUBE_N_COORD_CENTER_FB][2]; // Reorient center_fb when putting RL centers in RL faces
 
+    subcube() {}
+    subcube(int) {
+      init();
+    }
 
     inline bool operator==(const subcube &sc) const {
         return ((edge_sym == sc.edge_sym) && (center_r == sc.center_r) && (center_fb == sc.center_fb));
@@ -85,27 +89,28 @@ class subcube {
       return ( table[index>>3] >> ( index & 0x7 )) & 1;
     }
 
-    void init();
-    void unpack_center_r(cubepos &cube, unsigned short center_r);
-    unsigned short pack_center_r(const cubepos &cube);
-    void unpack_center_fb(cubepos &cube, unsigned int center_fb);
-    unsigned int pack_center_fb(const cubepos &cube);
-    void unpack_center_r_sc(cubepos &cube, unsigned char center_r);
-    unsigned char pack_center_r_sc(const cubepos &cube);
-    void unpack_edge(cubepos &cube, unsigned int edge_raw);
-    unsigned int pack_edge(const cubepos &cube);
-    void initSym2Raw ();
+    static void init();
+    static void unpack_center_r(cubepos &cube, unsigned short center_r);
+    static unsigned short pack_center_r(const cubepos &cube);
+    static void unpack_center_fb(cubepos &cube, unsigned int center_fb);
+    static unsigned int pack_center_fb(const cubepos &cube);
+    static void unpack_center_r_sc(cubepos &cube, unsigned char center_r);
+    static unsigned char pack_center_r_sc(const cubepos &cube);
+    static void unpack_edge(cubepos &cube, unsigned int edge_raw);
+    static unsigned int pack_edge(const cubepos &cube);
+    static void initSym2Raw();
     void pack_all(const cubepos &cube);
-    void initMove ();
+    static void initMove();
     void moveTo( int m, subcube &c ) const;
     void canonize();
-    void initToSC();
-    void initMoveSC();
-    void initReorientSC();
+    static void initToSC();
+    static void initMoveSC();
+    static void initReorientSC();
     bool convertToSC();
     void moveToSC( int m, subcube &c );
     void canonizeSC();
     void print();
 };
 
+static subcube init_subcube(1);
 #endif

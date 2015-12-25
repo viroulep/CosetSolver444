@@ -1,6 +1,6 @@
-#include "cubepos.h"
 #include <iostream>
 #include <sys/time.h>
+#include "cubepos.h"
 
 /* Definition of static variables (more c++ random stuff) */
 int cubepos::stage2moves[N_STAGE_MOVES] = {
@@ -19,7 +19,7 @@ int cubepos::moveConjugate[N_MOVES][N_SYM];
 int cubepos::moveConjugateStage[N_STAGE_MOVES][N_SYM];
 unsigned int cubepos::Cnk[25][25];
 unsigned char cubepos::next_syll[N_SYLL_AXIS][N_STAGE_MOVES];
-unsigned long long cubepos::mask_syll[N_SYLL_AXIS] = {0};
+unsigned long long cubepos::mask_syll[N_SYLL_AXIS];
 
 /* Initialise static arrays and stuff */
 void cubepos::init() {
@@ -48,14 +48,6 @@ void cubepos::identity() {
 		centers[i] = i/4;
 		edges[i] = i;
 	}
-}
-
-cubepos::cubepos(int,int,int) {
-	init();
-}
-
-cubepos::cubepos() {
-	identity();
 }
 
 /* Apply a single move to the cube position */
@@ -157,9 +149,10 @@ void cubepos::initSymTables(){
 	static const unsigned char symRLCenters[24] = {2, 3, 0, 1, 6, 7, 4, 5, 10, 11, 8, 9, 14, 15, 12, 13, 22, 23, 20, 21, 18, 19, 16, 17};
 
 	int i, b, c, d, e, idx=0;
-	identity();
+	cubepos cp;
+	cp.identity();
 	for (i = 0; i < 24; ++i)
-		centers[i] = (unsigned char)i; // We need to consider the cube as a super cube (unique centers) for the following
+		cp.centers[i] = (unsigned char)i; // We need to consider the cube as a super cube (unique centers) for the following
 
 	for (b=0;b<3;b++){ //SymUR3
 		for (c=0;c<2;c++){ //SymR
@@ -167,26 +160,26 @@ void cubepos::initSymTables(){
 				for (e=0;e<2;e++){ //SymU2
 					//SymLR2
 					for (i=0; i<24; i++){
-						symEdges[idx][i] = edges[i];
-						symEdges[idx+4][i] = edges[symRLEdges[i]];
-						symCenters[idx][i] = centers[i];
-						symCenters[idx+4][i] = centers[symRLCenters[i]];
+						symEdges[idx][i] = cp.edges[i];
+						symEdges[idx+4][i] = cp.edges[symRLEdges[i]];
+						symCenters[idx][i] = cp.centers[i];
+						symCenters[idx+4][i] = cp.centers[symRLCenters[i]];
 					}
 					idx += 1;
-					move (MOVE_Uw2);
-					move (MOVE_Dw2);
+					cp.move (MOVE_Uw2);
+					cp.move (MOVE_Dw2);
 				}
-				move (MOVE_Fw2);
-				move (MOVE_Bw2);
+				cp.move (MOVE_Fw2);
+				cp.move (MOVE_Bw2);
 			}
 			idx += 4;
-			move (MOVE_Rw1);
-			move (MOVE_Lw3);
+			cp.move (MOVE_Rw1);
+			cp.move (MOVE_Lw3);
 		}
-		move (MOVE_Uw3);
-		move (MOVE_Dw1);
-		move (MOVE_Rw3);
-		move (MOVE_Lw1);
+		cp.move (MOVE_Uw3);
+		cp.move (MOVE_Dw1);
+		cp.move (MOVE_Rw3);
+		cp.move (MOVE_Lw1);
 	}
 }
 
@@ -394,7 +387,7 @@ void cubepos::initSyll() {
   /* When no move was done, all moves are allowed */
   mask_syll[SYLL_NOMOVE] = (0x1ull << N_STAGE_MOVES) - 1;
 
-  for (int syll=0; syll<N_SYLL-1; syll++){
+  for (int syll=0; syll<SYLL_NOMOVE; syll++){
     unsigned char syll_axis = syll/N_SYLL_AXIS;
     unsigned char syll_rot = syll%N_SYLL_AXIS;
     unsigned int mask_axis = mask_syll_axis[syll_rot];

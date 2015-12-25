@@ -23,6 +23,11 @@ class coset {
     
     static unsigned char ptable[(COSET_N_RAW_COORD+1)>>1]; // Distance table of all coset positions
 
+    coset() {}
+    coset(int) {
+      init();
+    }
+
     /* Set one bit to 1 in the table at a certain index. */
     inline static void set1bit(unsigned char table[], int index) {
       table[index>>3] |= (unsigned char)( 1 << ( index & 0x7 ));
@@ -45,18 +50,19 @@ class coset {
         return (raw2sym[center_rl_raw] >> COSET_SYM_SHIFT) == 0;
     }
 
-    void init();
-    void unpack(cubepos &cube, unsigned int center_raw);
-    unsigned int pack(const cubepos &cube);
-    void initSym2Raw();
+    static void init();
+    static void unpack(cubepos &cube, unsigned int center_raw);
+    static unsigned int pack(const cubepos &cube);
+    static void initSym2Raw();
     void pack_all(const cubepos &cube);
-    void initMove();
+    static void initMove();
     void moveTo( int m, coset &c ) const;
-    void fillPruningTable();
+    static void fillPruningTable();
 
     inline int distance() const{
       return readTable(center_rl_raw);
     }
 };
 
+static coset init_coset(1);
 #endif

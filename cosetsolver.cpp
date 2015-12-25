@@ -1,12 +1,13 @@
+#include <iostream>
+#include <bitset>
+#include <set>
+#include <cstring>
 #include "cubepos.h"
 #include "coset.h"
 #include "subcube.h"
-#include <iostream>
-#include <set>
-#include <cstring>
 
 std::set<subcube> world;
-int maxsearchdepth = 6;
+int maxsearchdepth = 2;
 long long uniq = 0;
 long long probes = 0;
 
@@ -28,9 +29,13 @@ void slowsearch1(const coset &c, const subcube &sc, int togo, unsigned char syll
   coset c2;
   subcube sc2;
 
-  //unsigned long long movemask = cubepos::mask_syll[syll];
+  std::cout << "syll: " << (int)syll << std::endl;
+  unsigned long long movemask = cubepos::mask_syll[syll];
+  std::cout << "mask: " << std::bitset<64>(cubepos::mask_syll[48]) << std::endl;
+  std::cout << "mask: " << std::bitset<64>(movemask) << std::endl;
+  std::cout << "ref:  " << std::bitset<64>((0x1ull << N_STAGE_MOVES) - 1) << std::endl;
   /* Fix that later... */
-  unsigned long long movemask = (0x1ull << N_STAGE_MOVES) - 1;
+  //unsigned long long movemask = (0x1ull << N_STAGE_MOVES) - 1;
   while (movemask) {
     int mv = ffsll(movemask) - 1;
     movemask &= movemask - 0x1ull;
@@ -59,16 +64,15 @@ void slowsearch1(const coset &c, const subcube &sc) {
 int main(int argc, char *argv[]) {
 
 	cubepos cp;
-	cp.init();
 	coset c;
-	c.init();
 	subcube sc;
-	sc.init();
+        std::cout << "masi: " << std::bitset<64>(cubepos::mask_syll[48]) << std::endl;
 
 	cp.identity();
 	c.pack_all(cp);
 	sc.pack_all(cp);
 
+        std::cout << "masi: " << std::bitset<64>(cubepos::mask_syll[48]) << std::endl;
 	slowsearch1(c, sc);
 	return 0;
 }

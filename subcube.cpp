@@ -1,6 +1,6 @@
 #include <iostream>
+#include <bitset>
 #include "subcube.h"
-#include "coset.h"
 
 unsigned int subcube::sym2raw[SUBCUBE_N_COORD_EDGES];
 unsigned int subcube::raw2sym[SUBCUBE_N_RAW_COORD_EDGES];
@@ -19,16 +19,27 @@ unsigned int subcube::reorientCenterFB[SUBCUBE_N_COORD_CENTER_FB][2];
 
 
 void subcube::init(){
+  static int initialized = 0;
+  if (initialized)
+    return;
+  initialized = 1;
+
+  std::cout << "masc: " << std::bitset<64>(cubepos::mask_syll[48]) << std::endl;
   std::cout << "subcube: initSym2Raw" << std::endl;
   initSym2Raw();
+  std::cout << "masc: " << std::bitset<64>(cubepos::mask_syll[48]) << std::endl;
   std::cout << "subcube: initMove" << std::endl;
   initMove();
+  std::cout << "masc: " << std::bitset<64>(cubepos::mask_syll[48]) << std::endl;
   std::cout << "subcube: initToSC" << std::endl;
   initToSC();
+  std::cout << "masc: " << std::bitset<64>(cubepos::mask_syll[48]) << std::endl;
   std::cout << "subcube: initMoveSC" << std::endl;
   initMoveSC();
+  std::cout << "masc: " << std::bitset<64>(cubepos::mask_syll[48]) << std::endl;
   std::cout << "subcube: initReorientSC" << std::endl;
   initReorientSC();
+  std::cout << "masc: " << std::bitset<64>(cubepos::mask_syll[48]) << std::endl;
 }
 
 /* Unpack a centerR coord to a cube */
@@ -148,26 +159,39 @@ unsigned int subcube::pack_edge(const cubepos &cube){
 }
 
 void subcube::initSym2Raw (){
-  int repIdx = 0;
+  unsigned int repIdx = 0;
   cubepos cube1;
   cubepos cube2;
 
+  std::cout << "maaa: " << std::bitset<64>(cubepos::mask_syll[48]) << std::endl;
   unsigned char isRepTable[(SUBCUBE_N_RAW_COORD_EDGES>>3) + 1] = {0};
   for (unsigned int u = 0; u < SUBCUBE_N_RAW_COORD_EDGES; u++) {
+    std::cout << "maaa1: " << std::bitset<64>(cubepos::mask_syll[48]) << std::endl;
     if (get1bit(isRepTable, u)) continue;
+    std::cout << "maaa2: " << std::bitset<64>(cubepos::mask_syll[48]) << std::endl;
     raw2sym[u] = repIdx << SUBCUBE_SYM_SHIFT;
+    std::cout << "maaa3: " << std::bitset<64>(cubepos::mask_syll[48]) << std::endl;
     unpack_edge(cube1, u);
+    std::cout << "maaa4: " << std::bitset<64>(cubepos::mask_syll[48]) << std::endl;
     for (int s = 1; s < SUBCUBE_N_SYM; s++) {
       //cube1.conjugate (s, cube2);
       cube1.rightMult( cubepos::invSymIdx[s], cube2 );
       unsigned int raw_coord = pack_edge(cube2);
+      if (raw_coord >= SUBCUBE_N_RAW_COORD_EDGES) std::cout << "subcube::initSym2Raw: error edge raw coord too big!" << std::endl;
       set1bit( isRepTable, raw_coord );
       raw2sym[raw_coord] = ( repIdx << SUBCUBE_SYM_SHIFT ) + cubepos::invSymIdx[s];
       if( raw_coord == u )
         hasSym[repIdx] |= (1 << s);
     }
+    std::cout << "maaa5: " << std::bitset<64>(cubepos::mask_syll[48]) << std::endl;
+    if (repIdx >= SUBCUBE_N_COORD_EDGES) {
+      std::cout << "subcube::initSym2Raw: error sym coordinate too big!" << std::endl;
+      break;
+    }
     sym2raw[repIdx++] = u;
+    std::cout << "maaa6: " << std::bitset<64>(cubepos::mask_syll[48]) << std::endl;
   }
+  std::cout << "maaa: " << std::bitset<64>(cubepos::mask_syll[48]) << std::endl;
   if(repIdx != SUBCUBE_N_COORD_EDGES) {
     std::cout << "The number of sym coordinates is not correct: " << repIdx << std::endl;
   }

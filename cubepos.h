@@ -177,8 +177,13 @@ class cubepos {
 		  }
 
 		/* Constructors */
-		cubepos();
-		cubepos(int,int,int);
+		cubepos() {
+			identity();
+		}
+
+		cubepos(int,int,int) {
+			init();
+		}
 
     	/* Convert general move notation to stage move notation (ordered so that moves for each stage are (1..N_s)) */
 	    static int stage2moves[N_STAGE_MOVES]; 
@@ -199,6 +204,7 @@ class cubepos {
 		static unsigned char next_syll[N_SYLL_AXIS][N_STAGE_MOVES];
 		static unsigned long long mask_syll[N_SYLL_AXIS];
 
+
 		/* Perform the permutation cycle (a b c d) on the tab array */
 		static inline void cycle(unsigned char tab[], int a, int b, int c, int d, int times){
 			unsigned char temp = tab[d];
@@ -210,21 +216,21 @@ class cubepos {
 				cycle(tab, a, b, c, d, times - 1);
 		}
 
-		void init();
+		static void init();
 		void identity();
 		void move(int move);
-		void initSymTables();
-		void initInvSymIdx();
-		void initSymIdxMultiply();
+		static void initSymTables();
+		static void initInvSymIdx();
+		static void initSymIdxMultiply();
 		void leftMult(int symIdx);
 		void rightMult(int symIdx, cubepos &c);
 		void conjugate (int symIdx, cubepos &c);
-		void initMoveConjugate();
-		void initCnk();
-		void initSyll();
+		static void initMoveConjugate();
+		static void initCnk();
+		static void initSyll();
 };
 
-//static cubepos cubepos_initialization_hack(1,2,3);
+static cubepos cubepos_initialization_hack(1,2,3);
 double walltime();
 double duration();
 
