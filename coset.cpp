@@ -6,8 +6,8 @@
 unsigned int coset::sym2raw[COSET_N_COORD];
 unsigned int coset::raw2sym[COSET_N_RAW_COORD];
 unsigned long long coset::hasSym[COSET_N_COORD] = {0};
-unsigned int coset::moveTable[COSET_N_COORD][COSET_N_MOVES];
-unsigned char coset::ptable[COSET_N_COORD>>1];
+unsigned int coset::moveTable[COSET_N_RAW_COORD][COSET_N_MOVES];
+unsigned char coset::ptable[(COSET_N_RAW_COORD+1)>>1];
 
 void coset::init(){
   static int initialized = 0;
@@ -79,66 +79,55 @@ void coset::initSym2Raw (){
   }
 }
 
-/* Pack all coordinates from the full cube position, and compute the sym coordinate */
+/* Pack all coordinates from the full cube position */
 void coset::pack_all(const cubepos &cube){
-  unsigned int center_rl_raw = pack(cube);
-  unsigned int crl_sym = raw2sym[center_rl_raw];
-  sym = crl_sym & COSET_SYM_MASK;
-  center_rl_sym = crl_sym >> COSET_SYM_SHIFT;
+  center_rl_raw = pack(cube);
 }
 
 void coset::initMove (){
   cubepos cube1;
   cubepos cube2;
   
-  for (int u = 0; u < COSET_N_COORD; u++) {
-    unpack(cube1, sym2raw[u]);
+  for (int u = 0; u < COSET_N_RAW_COORD; u++) {
+    unpack(cube1, u);
     for (int m = 0; m < COSET_N_MOVES; m++) {
       cube2 = cube1;
       cube2.move (cubepos::stage2moves[m]);
-      moveTable[u][m] = raw2sym[pack(cube2)];
+      moveTable[u][m] = pack(cube2);
     }
   }
 }
 
 void coset::moveTo( int m, coset &c ) const{
-  unsigned int newcenter = moveTable[center_rl_sym][cubepos::moveConjugateStage[m][sym]];
-  c.center_rl_sym = (unsigned short) (newcenter >> COSET_SYM_SHIFT);
-  c.sym = cubepos::symIdxMultiply[newcenter & COSET_SYM_MASK][sym];
+  c.center_rl_raw = moveTable[center_rl_raw][m];
 }
 
 void coset::fillPruningTable(){
 
-  int psize = COSET_N_COORD; // Size of the distance table
+  int psize = COSET_N_RAW_COORD; // Size of the distance table
 
   /* Start filling the table with -1 */
-  for (int i=0; i<psize>>1; i++)
+  for (int i=0; i<(psize+1)>>1; i++)
     ptable[i] = 0xff;
 
   int pos = 0; // Number of positions for a given depth
   int total_pos = 0; // Total number of positions
-  int unique = 0; // Number of unique positions for a given depth
-  int total_unique = 0; // Total number of unique positions
   int done = 0; // Number of written values in the distance table
 
-  /* Add the 0-distance for solved positions */
-  int solvedState = 0;
-  writeTable(solvedState, 0);
-  done++;
-  unique++;
-
-  /* Count symmetric positions */
-  int nsym = 1;
-  unsigned long long symS = coset::hasSym[solvedState];
-  for (int k=0; symS != 0; symS>>=1, k++) {
-    if ((symS & 0x1L) == 0) continue;
-    nsym++;
-  }
-  pos = COSET_N_SYM/nsym;
+  /* Add the 0-distance for solved positions, corresponding to the solved cube in 3 different orientations */
+  cubepos cp;
+  cubepos cp2;
+  cp.identity();
+  writeTable(pack(cp), 0);
+  cp.rightMult(16, cp2);
+  writeTable(pack(cp2), 0);
+  cp.rightMult(32, cp2);
+  writeTable(pack(cp2), 0);
+  done = 3;
+  pos = 3;
 
   total_pos += pos;
-  total_unique += unique;
-  std::cout << std::setw(2) << 0 << std::setw(12) << pos << std::setw(10) << unique << std::endl;
+  std::cout << std::setw(2) << 0 << std::setw(12) << pos << std::endl;
 
   /* Build the table */
   coset c;
@@ -146,40 +135,28 @@ void coset::fillPruningTable(){
   while (( done < psize ) && ( depth < 15 )) {
     depth++;
     pos = 0;
-    unique = 0;
     for (int i=0; i<psize; i++) {
       if (readTable(i) != (depth-1)) continue;
 
       /* Set our coset with id i */
-      center_rl_sym = i;
-      sym = 0;
+      center_rl_raw = i;
 
       /* We apply each move to our coset */
       for (int m=0; m<COSET_N_MOVES; m++) {
         moveTo(m, c);
-        int idx = c.center_rl_sym;
+        int idx = c.center_rl_raw;
         if (readTable(idx) != 0x0f) continue;
 
         /* Storing this new position in the distance table */
         done++;
+        pos++;
         writeTable(idx, depth);
-        nsym = 1;
-        unique++;
-
-        /* Counting symmetries in our position */
-        unsigned long long symS = coset::hasSym[idx];
-        for (int k=0; symS != 0; symS>>=1, k++) {
-          if ((symS & 0x1L) == 0) continue;
-          nsym++;
-        }
-        pos += COSET_N_SYM/nsym;
       }
     }
     total_pos += pos;
-    total_unique += unique;
-    std::cout << std::setw(2) << depth << std::setw(12) << pos << std::setw(10) << unique << std::endl;
+    std::cout << std::setw(2) << depth << std::setw(12) << pos << std::endl;
   }
   std::cout << "-- ----------- ---------" << std::endl;
-  std::cout << std::setw(14) << total_pos << std::setw(10) << total_unique << std::endl;
+  std::cout << std::setw(14) << total_pos << std::endl;
 }
 

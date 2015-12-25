@@ -50,7 +50,7 @@ void move_cp(){
 			c.moveTo(move, c);
 		}
 		c2.pack_all(cp);
-		if (c.center_rl_sym != c2.center_rl_sym) {
+		if (c.center_rl_raw != c2.center_rl_raw) {
 			testok = 0;
 			break;
 		}

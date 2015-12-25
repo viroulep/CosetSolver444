@@ -12,15 +12,16 @@ const int COSET_N_MOVES = 36;
 
 class coset {
     public :
+    unsigned int center_rl_raw;
     unsigned short center_rl_sym;
     unsigned char sym;
     
     static unsigned int sym2raw[COSET_N_COORD]; // Get a representative of a sym-coordinate
     static unsigned int raw2sym[COSET_N_RAW_COORD]; // Get the sym-coordinate of a raw coordinate
     static unsigned long long hasSym[COSET_N_COORD]; // Stores which positions are symmetric to which symmetries
-    static unsigned int moveTable[COSET_N_COORD][COSET_N_MOVES]; // Move table of the sym-coordinate
+    static unsigned int moveTable[COSET_N_RAW_COORD][COSET_N_MOVES]; // Move table of the raw coordinate
     
-    static unsigned char ptable[COSET_N_COORD>>1]; // Distance table of all coset positions
+    static unsigned char ptable[(COSET_N_RAW_COORD+1)>>1]; // Distance table of all coset positions
 
     /* Set one bit to 1 in the table at a certain index. */
     inline static void set1bit(unsigned char table[], int index) {
@@ -41,7 +42,7 @@ class coset {
     }
 
     inline bool isSolved() const{
-        return center_rl_sym == 0;
+        return (raw2sym[center_rl_raw] >> COSET_SYM_SHIFT) == 0;
     }
 
     void init();
@@ -54,7 +55,7 @@ class coset {
     void fillPruningTable();
 
     inline int distance() const{
-      return readTable(center_rl_sym);
+      return readTable(center_rl_raw);
     }
 };
 
