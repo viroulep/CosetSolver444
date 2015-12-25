@@ -29,10 +29,7 @@ void slowsearch1(const coset &c, const subcube &sc, int togo, unsigned char syll
   coset c2;
   subcube sc2;
 
-  std::cout << "syll: " << (int)syll << std::endl;
   unsigned long long movemask = cubepos::mask_syll[syll];
-  std::cout << "mask: " << std::bitset<64>(cubepos::mask_syll[48]) << std::endl;
-  std::cout << "mask: " << std::bitset<64>(movemask) << std::endl;
   std::cout << "ref:  " << std::bitset<64>((0x1ull << N_STAGE_MOVES) - 1) << std::endl;
   /* Fix that later... */
   //unsigned long long movemask = (0x1ull << N_STAGE_MOVES) - 1;
@@ -63,7 +60,8 @@ void slowsearch1(const coset &c, const subcube &sc) {
 
 int main(int argc, char *argv[]) {
 
-	std::cout << "mask: " << std::bitset<64>(cubepos::mask_syll[48]) << std::endl;
+	std::cout << "mask:      " << std::bitset<64>(cubepos::mask_syll[48]) << std::endl;
+	std::cout << "should be: " << std::bitset<64>((0x1ull << N_STAGE_MOVES) - 1) << std::endl;
 	cubepos cp;
 	coset c;
 	subcube sc;
