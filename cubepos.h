@@ -201,8 +201,8 @@ class cubepos {
 
 		static unsigned int Cnk[25][25]; // binomial coefficients
 
-		static unsigned char next_syll[N_SYLL_AXIS][N_STAGE_MOVES];
-		static unsigned long long mask_syll[N_SYLL_AXIS];
+		static unsigned char next_syll[N_SYLL][N_STAGE_MOVES];
+		static unsigned long long mask_syll[N_SYLL];
 
 
 		/* Perform the permutation cycle (a b c d) on the tab array */

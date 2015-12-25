@@ -18,8 +18,8 @@ int cubepos::symIdxMultiply[N_SYM][N_SYM];
 int cubepos::moveConjugate[N_MOVES][N_SYM];
 int cubepos::moveConjugateStage[N_STAGE_MOVES][N_SYM];
 unsigned int cubepos::Cnk[25][25];
-unsigned char cubepos::next_syll[N_SYLL_AXIS][N_STAGE_MOVES];
-unsigned long long cubepos::mask_syll[N_SYLL_AXIS];
+unsigned char cubepos::next_syll[N_SYLL][N_STAGE_MOVES];
+unsigned long long cubepos::mask_syll[N_SYLL];
 
 /* Initialise static arrays and stuff */
 void cubepos::init() {
